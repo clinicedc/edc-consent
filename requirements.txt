@@ -2,7 +2,15 @@ Django>=1.8.2
 Unipath==1.1
 django-simple-history===1.6.1
 python-dateutil==2.4.2
+# edc-base
+# edc-registration
+# edc-identifier
+# edc_subject
+
 -e git+https://github.com/botswana-harvard/edc-base@develop#egg=edc-base
 -e git+https://github.com/botswana-harvard/edc-registration@develop#egg=edc-registration
--e git+https://github.com/botswana-harvard/edc-appointment@develop#egg=edc-appointment
+# -e git+https://github.com/botswana-harvard/edc-appointment@develop#egg=edc-appointment
 -e git+https://github.com/botswana-harvard/edc-identifier@develop#egg=edc-identifier
+-e git+https://github.com/botswana-harvard/edc-device@develop#egg=edc-device
+-e git+https://github.com/botswana-harvard/edc-subject@develop#egg=edc-subject
+# -e git+https://github.com/botswana-harvard/edc-offstudy@develop#egg=edc-offstudy
