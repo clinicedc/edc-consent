@@ -23,6 +23,7 @@ setup(
     zip_safe=False,
     keywords='django participant ICF',
     install_requires=[
+        'django-simple-history>=1.6',
         'edc-base>=0.1',
         'edc-registration>=0.1',
     ],
