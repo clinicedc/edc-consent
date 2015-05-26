@@ -14,4 +14,7 @@ Add to settings:
 	MAX_AGE_OF_CONSENT = 64
 	AGE_IS_ADULT = 18
 	GENDER_OF_CONSENT = ['M', 'F']
-
+	
+	# bypass unique constraint on the subject identifier in the consent model
+	# see base_consent
+	SUBJECT_IDENTIFIER_UNIQUE_ON_CONSENT = False  # default is True	
