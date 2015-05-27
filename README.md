@@ -18,3 +18,12 @@ Add to settings:
 	# bypass unique constraint on the subject identifier in the consent model
 	# see base_consent
 	SUBJECT_IDENTIFIER_UNIQUE_ON_CONSENT = False  # default is True	
+	
+Features
+--------
+
+- base class for an informed consent document
+- models link to the consent cannot be used until the consent is complete
+- consents are versioned
+- data collection is only allowed within the validity period of the consent per consented participant
+ 

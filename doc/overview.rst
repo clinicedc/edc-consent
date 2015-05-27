@@ -2,9 +2,9 @@
 Overview
 ========
 
-:mod:`bhp_consent` handles consent issues as they relate to data entry. In a nutshell:
+:mod:`edc_consent` handles consent issues as they relate to data entry. In a nutshell:
 
-    * a subject must be consented before data is collected.
+    * a subject must be consented before research data is collected.
     * For protocols with more than one version of a consent, models and model fields may be restricted depending on the
       subject's consent 
     * a consent covers a fixed time period before which data entry may not begin and after which data entry stops.
