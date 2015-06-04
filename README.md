@@ -17,7 +17,8 @@ Add to settings:
 	
 	# bypass unique constraint on the subject identifier in the consent model
 	# see base_consent
-	SUBJECT_IDENTIFIER_UNIQUE_ON_CONSENT = False  # default is True	
+	SUBJECT_IDENTIFIER_UNIQUE_ON_CONSENT = False  # default is True
+	
 	
 Features
 --------
@@ -26,4 +27,6 @@ Features
 - models link to the consent cannot be used until the consent is complete
 - consents are versioned
 - data collection is only allowed within the validity period of the consent per consented participant
+- link subject type to the consent model. e.g. maternal, infant, adult, etc.
+- link max number of consented subjects to the consent.
  
