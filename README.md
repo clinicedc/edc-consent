@@ -28,7 +28,7 @@ TODO
 
 ## Usage
 
-First, it's a good idea to limit the number of to match your enrollment targets. Do this by creating a mixin for the consent model class:
+First, it's a good idea to limit the number of consents created to match your enrollment targets. Do this by creating a mixin for the consent model class:
 
 	class ConsentQuotaMixin(QuotaMixin):
 	
