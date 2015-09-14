@@ -28,9 +28,8 @@ TODO
 - version at model field level (e.g. a new consent period adds additional questions to a form)
 - allow a different subject's consent to cover for another, for example mother and infant. 
 
-## Mixins
+## Usage
 
-### Capping the number of consents
 First, it's a good idea to limit the number of to match your enrollment targets. Do this by creating a mixin for the consent model class:
 
 	class ConsentQuotaMixin(QuotaMixin):
