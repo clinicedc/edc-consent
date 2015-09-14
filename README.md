@@ -88,7 +88,7 @@ As subjects are identified:
 
 If a consent version cannot be found given the consent model class and report_datetime a `ConsentTypeError` is raised.
 
-If a consent for this subject_identifier cannot be found that matches the `ConsentType` and `NotConsentedError` is raised.
+If a consent for this subject_identifier cannot be found that matches the `ConsentType` a `NotConsentedError` is raised.
 
 
 ## Common senarios
