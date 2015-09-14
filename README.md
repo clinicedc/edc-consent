@@ -21,7 +21,8 @@ Add to settings:
 - data collection is only allowed within the validity period of the consent per consented participant
 - data for models that require consent are tagged with the consent version
 
-TODO
+## TODO
+
 - link subject type to the consent model. e.g. maternal, infant, adult, etc.
 - version at model field level (e.g. a new consent period adds additional questions to a form)
 - allow a different subject's consent to cover for another, for example mother and infant. 
@@ -29,6 +30,8 @@ TODO
 ## Usage
 
 First, it's a good idea to limit the number of consents created to match your enrollment targets. Do this by creating a mixin for the consent model class:
+
+	from edc_quota.client.models import QuotaMixin, QuotaManager
 
 	class ConsentQuotaMixin(QuotaMixin):
 	
@@ -41,8 +44,13 @@ Then declare the consent model:
 
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
 
+    	quota = QuotaManager()
+
 		class Meta:
 			app_label = 'my_app'
+
+
+	
 
 Now that you have a consent model class, identify and declare the models that will require this consent:
 
