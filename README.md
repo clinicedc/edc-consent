@@ -118,4 +118,17 @@ TODO
 ### Infants use mother's consent
 
 TODO
+
 By adding the property `consenting_subject_identifier` to the consent
+
+
+## Other TODO
+
+* `django_crypto_fields` vs M2Crypto from `edc`
+* `TimepointStatus` model update in `save` method of models requiring consent
+* fields related to consent version
+* review verification actions
+
+
+ 
+
