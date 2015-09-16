@@ -11,6 +11,7 @@ Add to settings:
 	MAX_AGE_OF_CONSENT = 64
 	AGE_IS_ADULT = 18
 	GENDER_OF_CONSENT = ['M', 'F']	
+	SUBJECT_TYPES = ['subject']
 	
 ## Features
 
