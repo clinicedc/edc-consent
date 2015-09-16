@@ -123,12 +123,18 @@ TODO
 By adding the property `consenting_subject_identifier` to the consent
 
 
+## Compatibility with PY2/1.6
+
+`edc_consent` is compatible with the PY2/1.6 version of `edc` and will pull some modules from `edc` if installed.. The most important compatibility problem is with encryption. See the imports in `utils`, `validators` and `encrypted_fields`. 
+
 ## Other TODO
 
-* `django_crypto_fields` vs M2Crypto from `edc`
 * `TimepointStatus` model update in `save` method of models requiring consent
-* fields related to consent version
+* handle added or removed model fields (questions) because of consent version change
 * review verification actions
+* management command to update version on models that require consent (if edc_consent added after instances were created)
+* handle re-consenting issues, for example, if original consent was restricted by age (16-64) but the re-consent is not. May need to open upper bound.
+
 
 
  
