@@ -99,6 +99,38 @@ If a consent version cannot be found given the consent model class and report_da
 
 If a consent for this subject_identifier cannot be found that matches the `ConsentType` a `NotConsentedError` is raised.
 
+## Validators
+
+The `ConsentAgeValidator` validates the date of birth to within a given age range, for example:
+
+	from edc_consent.validtors import ConsentAgeValidator
+	
+	class MyConsent(ConsentQuotaMixin, BaseConsent):
+
+		dob = models.DateField(
+	        validators=[ConsentAgeValidator(16, 64)])
+
+    	quota = QuotaManager()
+
+		class Meta:
+			app_label = 'my_app'
+
+The `PersonalFieldsMixin` includes a date of birth field and you can set the age bounds like this:
+
+	from edc_consent.validtors import ConsentAgeValidator
+	from edc_consent.models.fields import PersonalFieldsMixin
+	
+	class MyConsent(ConsentQuotaMixin, PersonalFieldsMixin, BaseConsent):
+	
+    	quota = QuotaManager()
+
+        class Constants(PersonalFieldsMixin.Constants):
+            MIN_AGE_OF_CONSENT = 18
+            MAX_AGE_OF_CONSENT = 64
+
+		class Meta:
+			app_label = 'my_app'
+
 
 ## Common senarios
 
