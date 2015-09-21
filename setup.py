@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='edc-consent',
-    version='0.1.1',
+    version='0.1.2',
     author=u'Erik van Widenfelt',
     author_email='ew2789@gmail.com',
     packages=find_packages(),
@@ -22,10 +22,6 @@ setup(
     long_description=README,
     zip_safe=False,
     keywords='django participant ICF',
-    install_requires=[
-        'edc-base>=0.1',
-        'edc-registration>=0.1',
-    ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

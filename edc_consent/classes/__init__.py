@@ -1,5 +1,1 @@
-from edc_consent_helper import ConsentHelper
-from edc_consent import consents
-from edc_consented_subject_identifier import ConsentedSubjectIdentifier
-from edc_consent import Consent
-from edc_consent import site_consents
+from .consent_helper import ConsentHelper

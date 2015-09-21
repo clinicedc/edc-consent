@@ -1,50 +1,54 @@
-import re
+from uuid import uuid4
 
-from dateutil.relativedelta import relativedelta
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
-from django_crypto_fields.fields import LastnameField, EncryptedTextField
-from django_crypto_crypto_fields.utils import mask_encrypted
+from edc_consent.audit_trail import AuditTrail
+from edc_consent.encrypted_fields import EncryptedTextField
+from edc_consent.utils import formatted_age, age
+from edc_consent.validators import datetime_not_future, datetime_not_before_study_start
 
-from edc.core.bhp_common.utils import formatted_age
-from edc.subject.subject.models import BaseSubject
-from edc_base.model.validators import datetime_not_future, datetime_not_before_study_start, eligible_if_no
-from edc_constants.choices import YES_NO
+from ..exceptions import ConsentVersionError
 
-from ..classes import ConsentedSubjectIdentifier
-from ..exceptions import ConsentError
-
-from .base_consent_history import BaseConsentHistory
+from .consent_type import ConsentType
 
 
-# allow a settings attribute to override the unique constraint on the
-# subject identifier
-try:
-    subject_identifier_is_unique = settings.SUBJECT_IDENTIFIER_UNIQUE_ON_CONSENT
-except:
-    subject_identifier_is_unique = True
+class ConsentManager(models.Manager):
+
+    def valid_consent_for_period(self, subject_identifier, report_datetime):
+        consent = None
+        try:
+            consent_type = ConsentType.objects.get_by_consent_datetime(
+                self.model, report_datetime)
+            consent = self.get(subject_identifier=subject_identifier, version=consent_type.version)
+        except (ConsentType.DoesNotExist, self.model.DoesNotExist):
+            pass
+        return consent
 
 
-class BaseConsent(BaseSubject):
+class BaseConsent(models.Model):
 
-    """ Consent models should be subclasses of this """
+    MAX_SUBJECTS = 0
+
+    get_latest_by = 'consent_datetime'
 
     subject_identifier = models.CharField(
         verbose_name="Subject Identifier",
         max_length=50,
         blank=True,
-        db_index=True,
-        unique=subject_identifier_is_unique,
     )
 
-    site_code = models.CharField(
-        verbose_name='Site',
-        help_text="This refers to the site or 'clinic area' where the subject is being consented."
+    subject_identifier_as_pk = models.CharField(
+        verbose_name="Subject Identifier as pk",
+        max_length=50,
+        default=uuid4
+    )
+
+    subject_identifier_aka = models.CharField(
+        verbose_name="Subject Identifier a.k.a",
+        max_length=50,
+        null=True,
+        editable=False,
+        help_text='track a previously allocated identifier.'
     )
 
     consent_datetime = models.DateTimeField(
@@ -54,54 +58,18 @@ class BaseConsent(BaseSubject):
             datetime_not_future, ],
     )
 
-    guardian_name = LastnameField(
-        verbose_name=("Guardian\'s Last and first name (minors only)"),
-        validators=[
-            RegexValidator(
-                '^[A-Z]{1,50}\, [A-Z]{1,50}$',
-                'Invalid format. Format is \'LASTNAME, FIRSTNAME\'. All uppercase separated by a comma')],
-        blank=True,
+    is_verified = models.BooleanField(default=False, editable=False)
+
+    is_verified_datetime = models.DateTimeField(null=True)
+
+    version = models.CharField(max_length=10, default='?')
+
+    sid = models.CharField(
+        verbose_name="SID",
+        max_length=15,
         null=True,
-        help_text=(
-            'Required only if subject is a minor. Format is \'LASTNAME, FIRSTNAME\'. '
-            'All uppercase separated by a comma then followe by a space.'),
-    )
-
-    may_store_samples = models.CharField(
-        verbose_name=_("Sample storage"),
-        max_length=3,
-        choices=YES_NO,
-        help_text=("Does the subject agree to have samples stored after the study has ended")
-    )
-
-    is_incarcerated = models.CharField(
-        verbose_name="Is the participant under involuntary incarceration?",
-        max_length=3,
-        choices=YES_NO,
-        validators=[eligible_if_no, ],
-        default='-',
-        help_text="( if 'YES' STOP patient cannot be consented )",
-    )
-
-    is_literate = models.CharField(
-        verbose_name="Is the participant LITERATE?",
-        max_length=3,
-        choices=YES_NO,
-        default='-',
-        help_text="( if 'No' provide witness\'s name here and with signature on the paper document.)",
-    )
-
-    witness_name = EncryptedLastnameField(
-        verbose_name=_("Witness\'s Last and first name (illiterates only)"),
-        validators=[
-            RegexValidator(
-                '^[A-Z]{1,50}\, [A-Z]{1,50}$',
-                'Invalid format. Format is \'LASTNAME, FIRSTNAME\'. All uppercase separated by a comma')],
         blank=True,
-        null=True,
-        help_text=_(
-            'Required only if subject is illiterate. Format is \'LASTNAME, FIRSTNAME\'. '
-            'All uppercase separated by a comma'),
+        help_text='Used for randomization against a prepared rando-list.'
     )
 
     comment = EncryptedTextField(
@@ -111,165 +79,57 @@ class BaseConsent(BaseSubject):
         null=True
     )
 
-    consent_version_on_entry = models.IntegerField(
+    dm_comment = models.CharField(
+        verbose_name="Data Management comment",
+        max_length=150,
+        null=True,
         editable=False,
-        default=1,
-        help_text='Version of subject\'s initial edc_consent.'
+        help_text='see also edc.data manager.'
     )
 
-    consent_version_recent = models.IntegerField(
-        editable=False,
-        default=1,
-        help_text='Version of subject\'s most recent edc_consent.'
-    )
+    objects = models.Manager()
 
-    language = models.CharField(
-        verbose_name='Language of edc_consent',
-        max_length=25,
-        choices=settings.LANGUAGES,
-        default='not specified',
-        help_text='The language used for the edc_consent process will also be used during data collection.'
-    )
+    consent = ConsentManager()
 
-    is_verified = models.BooleanField(default=False, editable=False)
+    history = AuditTrail()
 
-    is_verified_datetime = models.DateTimeField(null=True)
-
-    def __str__(self):
-        return "{0} {1} {2}".format(self.mask_unset_subject_identifier(), mask_encrypted(self.first_name), self.initials)
-
-    def get_site_code(self):
-        return self.site_code
-
-    def save_new_consent(self, using=None, subject_identifier=None):
-        """ Users may override this to compliment the default behavior for new instances.
-
-        Must return a subject_identifier or None."""
-
-        return subject_identifier
-
-    def _save_new_consent(self, using=None, **kwargs):
-        """ Creates or gets a subject identifier.
-
-        ..note:: registered subject is updated/created on edc.subject signal.
-
-        Also, calls user method :func:`save_new_consent`"""
-        try:
-            registered_subject = getattr(self, 'registered_subject')
-        except AttributeError:
-            registered_subject = None
-        self.subject_identifier = self.save_new_consent(using=using, subject_identifier=self.subject_identifier)
-        re_pk = re.compile('[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}')
-        dummy = self.subject_identifier
-        # recall, if subject_identifier is not set, subject_identifier will be a uuid.
-        if re_pk.match(self.subject_identifier):
-            # test for user provided subject_identifier field method
-            if self.get_user_provided_subject_identifier_attrname():
-                self.subject_identifier = self._get_user_provided_subject_identifier()
-                if not self.subject_identifier:
-                    self.subject_identifier = dummy
-            # try to get from registered_subject (was created  using signal in edc.subject)
-            if re_pk.match(self.subject_identifier):
-                if registered_subject:
-                    if registered_subject.subject_identifier:
-                        # check for  registered subject key and if it already has
-                        # a subject_identifier (e.g for subjects re-consenting)
-                        self.subject_identifier = self.registered_subject.subject_identifier
-            # create a subject identifier, if not already done
-            if re_pk.match(self.subject_identifier):
-                consented_subject_identifier = ConsentedSubjectIdentifier(site_code=self.get_site_code(), using=using)
-                self.subject_identifier = consented_subject_identifier.get_identifier(using=using)
-        if not self.subject_identifier:
-            self.subject_identifier = dummy
-        if re_pk.match(self.subject_identifier):
-            raise ConsentError("Subject identifier not set after saving new edc_consent! Got {0}".format(self.subject_identifier))
+    def natural_key(self):
+        return (self.subject_identifier_as_pk, )
 
     def save(self, *args, **kwargs):
-        if self.confirm_identity:
-            if self.identity != self.confirm_identity:
-                raise ValueError('Attribute \'identity\' must match attribute \'confirm_identity\'. Catch this error on the form')
-        self.insert_dummy_identifier()
-        # if adding, call _save_new_consent()
-        if not self.id:
-            self._save_new_consent(kwargs.get('using', None))
+        if not self.id and not self.subject_identifier:
+            self.subject_identifier = self.subject_identifier_as_pk
+        consent_type = ConsentType.objects.get_by_consent_datetime(
+            self.__class__, self.consent_datetime)
+        self.version = consent_type.version
+        if consent_type.updates_version:
+            try:
+                previous_consent = self.__class__.objects.get(
+                    subject_identifier=self.subject_identifier,
+                    identity=self.identity,
+                    version__in=consent_type.updates_version.split(','),
+                    **self.additional_filter_options())
+                previous_consent.subject_identifier_as_pk = self.subject_identifier_as_pk
+                previous_consent.subject_identifier_aka = self.subject_identifier_aka
+            except self.__class__.DoesNotExist:
+                raise ConsentVersionError(
+                    'Previous consent with version {0} for this subject not found. Version {1} updates {0}.'
+                    'Ensure all details match (identity, dob, first_name, last_name)'.format(
+                        consent_type.updates_version.split(','), self.version))
         super(BaseConsent, self).save(*args, **kwargs)
 
-    @property
-    def registered_subject_options(self):
-        """Returns a dictionary of RegisteredSubject attributes
-        ({field, value}) to be used, for example, as the defaults
-        kwarg RegisteredSubject.objects.get_or_create()."""
-        options = {
-            'study_site': self.study_site,
-            'dob': self.dob,
-            'is_dob_estimated': self.is_dob_estimated,
-            'gender': self.gender,
-            'initials': self.initials,
-            'identity': self.identity,
-            'identity_type': self.identity_type,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'subject_type': self.get_subject_type(),
-        }
-        if self.last_name:
-            options.update({'registration_status': 'consented'})
-        return options
+    def additional_filter_options(self):
+        """Additional kwargs to filter the consent when looking for the previous consent."""
+        return {}
 
     @property
-    def age(self):
-        return relativedelta(self.consent_datetime, self.dob).years
+    def age_at_consent(self):
+        """Returns a relativedelta."""
+        return age(self.dob, self.consent_datetime)
 
     def formatted_age_at_consent(self):
+        """Returns a string representation."""
         return formatted_age(self.dob, self.consent_datetime)
-
-    @classmethod
-    def get_consent_update_model(self):
-        raise TypeError(
-            'The ConsentUpdateModel is required. Specify a class method '
-            'get_consent_update_model() on the model to return the ConsentUpdateModel class.')
-
-    def get_report_datetime(self):
-        return self.consent_datetime
-
-    def get_subject_type(self):
-        raise ImproperlyConfigured(
-            'Method must be overridden to return a subject_type. '
-            'e.g. \'subject\', \'maternal\', \'infant\', etc')
-
-    def bypass_for_edit_dispatched_as_item(self, using=None, update_fields=None):
-        """Allow bypass only if doing edc_consent verification."""
-        # requery myself
-        obj = self.__class__.objects.using(using).get(pk=self.pk)
-        # dont allow values in these fields to change if dispatched
-        may_not_change_these_fields = []
-        for k, v in obj.__dict__.items():
-            if k not in ['is_verified_datetime', 'is_verified']:
-                may_not_change_these_fields.append((k, v))
-        for k, v in may_not_change_these_fields:
-            if k[0] != '_':
-                if getattr(self, k) != v:
-                    return False
-        return True
-
-    def get_consent_history_model(self):
-        """Returns the history model for this app.
-
-        Users must override to return a model of base class BaseConsentHistory"""
-
-        return None
-
-    def update_consent_history(self, created, using):
-        """Updates the edc_consent history model for this edc_consent instance if there is a edc_consent history model."""
-        if self.get_consent_history_model():
-            if not issubclass(self.get_consent_history_model(), BaseConsentHistory):
-                raise ImproperlyConfigured('Expected a subclass of BaseConsentHistory.')
-            self.get_consent_history_model().objects.update_consent_history(self, created, using)
-
-    def delete_consent_history(self, app_label, model_name, pk, using):
-        if self.get_consent_history_model():
-            if not issubclass(self.get_consent_history_model(), BaseConsentHistory):
-                raise ImproperlyConfigured('Expected a subclass of BaseConsentHistory.')
-            self.get_consent_history_model().objects.delete_consent_history(app_label, model_name, pk, using)
 
     class Meta:
         abstract = True
