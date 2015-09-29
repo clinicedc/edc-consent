@@ -7,11 +7,10 @@ Add base classes for the Informed Consent form and process.
 	
 Add to settings:
 
-	MIN_AGE_OF_CONSENT = 16
-	MAX_AGE_OF_CONSENT = 64
-	AGE_IS_ADULT = 18
-	GENDER_OF_CONSENT = ['M', 'F']	
-	SUBJECT_TYPES = ['subject']
+	from django.utils import timezone
+
+	STUDY_OPEN_DATETIME = timezone.datetime(2013, 10, 18)
+
 	
 ## Features
 
@@ -45,12 +44,23 @@ Then declare the consent model:
 
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
 
+		MIN_AGE_OF_CONSENT = 16
+		MAX_AGE_OF_CONSENT = 64
+		AGE_IS_ADULT = 18
+		GENDER_OF_CONSENT = ['M', 'F']	
+		SUBJECT_TYPES = ['subject']
+
     	quota = QuotaManager()
 
 		class Meta:
 			app_label = 'my_app'
 
+Declare the ModelForm:
 
+	class MyConsentForm(BaseConsentForm):
+
+		class Meta:
+			model = MyConsent
 	
 
 Now that you have a consent model class, identify and declare the models that will require this consent:
