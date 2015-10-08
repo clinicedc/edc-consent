@@ -134,9 +134,8 @@ The `PersonalFieldsMixin` includes a date of birth field and you can set the age
 	
     	quota = QuotaManager()
 
-        class Constants(PersonalFieldsMixin.Constants):
-            MIN_AGE_OF_CONSENT = 18
-            MAX_AGE_OF_CONSENT = 64
+        MIN_AGE_OF_CONSENT = 18
+        MAX_AGE_OF_CONSENT = 64
 
 		class Meta:
 			app_label = 'my_app'
