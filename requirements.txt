@@ -1,8 +1,16 @@
-Django>=1.6
-Unipath==1.1
+Django==1.6
+M2Crypto==0.22.3
+django-tastypie
+django_extensions
 django-simple-history
 python-dateutil
-fake-factory
+django_databrowse
+numpy
+Unipath
+GitPython
 factory-boy
--e git+https://github.com/botswana-harvard/edc-base@develop#egg=edc-base
--e git+https://github.com/botswana-harvard/edc-constants@develop#egg=edc-constants
+pytz
+pyodbc
+pycups
+git+https://github.com/botswana-harvard/edc-base@develop#egg=edc-base
+git+https://github.com/botswana-harvard/edc-constants@develop#egg=edc-constants
