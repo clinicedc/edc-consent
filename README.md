@@ -67,7 +67,7 @@ Now that you have a consent model class, identify and declare the models that wi
 
 	class Questionnaire(RequiresConsentMixin, models.Model):
 
-    	CONSENT_MODEL = MyConsent
+    	consent_model = MyConsent  # or tuple (app_label, model_name)
 
     	report_datetime = models.DateTimeField(default=timezone.now)
 
@@ -88,7 +88,7 @@ Now that you have a consent model class, identify and declare the models that wi
 	
 Notice above the first two class attributes, namely:
 
-* CONSENT_MODEL: this is the consent model class that was declared above;
+* consent_model: this is the consent model class that was declared above;
 * report_datetime: a required field used to lookup the correct consent version from ConsentType and to find, together with `subject_identifier`,  a valid instance of `MyConsent`;
 
 Also note the property `subject_identifier`. 
