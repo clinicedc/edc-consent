@@ -109,6 +109,29 @@ If a consent version cannot be found given the consent model class and report_da
 
 If a consent for this subject_identifier cannot be found that matches the `ConsentType` a `NotConsentedError` is raised.
 
+## Specimen Consent
+A participant may consent to the study but not agree to have specimens stored long term. A specimen consent is administered separately to clarify the participant\'s intention.
+
+The specimen consent is declared using the base class `BaseSpecimenConsent`. This is an abridged version of `BaseConsent`. The specimen consent also uses the `RequiresConsentMixin` as it cannot stand alone as an ICF. The `RequiresConsentMixin` ensures the specimen consent is administered after the main study ICF, in this case `MyStudyConsent`.
+
+A specimen consent is declared in your app like this: 
+
+        class SpecimenConsent(BaseSpecimenConsent, SampleCollectionFieldsMixin, RequiresConsentMixin,
+                              VulnerabilityFieldsMixin, AppointmentMixin, BaseUuidModel):
+
+        consent_model = MyStudyConsent
+
+        registered_subject = models.OneToOneField(RegisteredSubject, null=True)
+
+        objects = models.Manager()
+
+        history = AuditTrail()
+
+        class Meta:
+            app_label = 'my_app'
+            verbose_name = 'Specimen Consent'
+ 
+
 ## Validators
 
 The `ConsentAgeValidator` validates the date of birth to within a given age range, for example:
