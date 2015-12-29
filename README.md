@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent)
+[![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent) [![Coverage Status](https://coveralls.io/repos/botswana-harvard/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/botswana-harvard/edc-consent?branch=develop)
 
 # edc-consent
 Add base classes for the Informed Consent form and process.
