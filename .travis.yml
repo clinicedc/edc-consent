@@ -45,8 +45,8 @@ install:
 
 before_script:
   - flake8 edc_consent
-  - mysql -e 'create database mb;'
-  - mysql -e 'create database mb_lab;'
+  - mysql -e 'create database mb CHARACTER SET utf8;'
+  - mysql -e 'create database mb_lab CHARACTER SET utf8;'
 
 script: 
   - coverage run --source=edc_consent manage.py test
