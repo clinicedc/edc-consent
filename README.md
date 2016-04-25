@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent)
+[![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent) [![Coverage Status](https://coveralls.io/repos/botswana-harvard/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/botswana-harvard/edc-consent?branch=develop)
 
 # edc-consent
 Add base classes for the Informed Consent form and process.
@@ -67,7 +67,7 @@ Now that you have a consent model class, identify and declare the models that wi
 
 	class Questionnaire(RequiresConsentMixin, models.Model):
 
-    	CONSENT_MODEL = MyConsent
+    	consent_model = MyConsent  # or tuple (app_label, model_name)
 
     	report_datetime = models.DateTimeField(default=timezone.now)
 
@@ -88,7 +88,7 @@ Now that you have a consent model class, identify and declare the models that wi
 	
 Notice above the first two class attributes, namely:
 
-* CONSENT_MODEL: this is the consent model class that was declared above;
+* consent_model: this is the consent model class that was declared above;
 * report_datetime: a required field used to lookup the correct consent version from ConsentType and to find, together with `subject_identifier`,  a valid instance of `MyConsent`;
 
 Also note the property `subject_identifier`. 
@@ -108,6 +108,29 @@ As subjects are identified:
 If a consent version cannot be found given the consent model class and report_datetime a `ConsentTypeError` is raised.
 
 If a consent for this subject_identifier cannot be found that matches the `ConsentType` a `NotConsentedError` is raised.
+
+## Specimen Consent
+A participant may consent to the study but not agree to have specimens stored long term. A specimen consent is administered separately to clarify the participant\'s intention.
+
+The specimen consent is declared using the base class `BaseSpecimenConsent`. This is an abridged version of `BaseConsent`. The specimen consent also uses the `RequiresConsentMixin` as it cannot stand alone as an ICF. The `RequiresConsentMixin` ensures the specimen consent is administered after the main study ICF, in this case `MyStudyConsent`.
+
+A specimen consent is declared in your app like this: 
+
+        class SpecimenConsent(BaseSpecimenConsent, SampleCollectionFieldsMixin, RequiresConsentMixin,
+                              VulnerabilityFieldsMixin, AppointmentMixin, BaseUuidModel):
+
+        consent_model = MyStudyConsent
+
+        registered_subject = models.OneToOneField(RegisteredSubject, null=True)
+
+        objects = models.Manager()
+
+        history = AuditTrail()
+
+        class Meta:
+            app_label = 'my_app'
+            verbose_name = 'Specimen Consent'
+ 
 
 ## Validators
 
