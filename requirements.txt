@@ -4,6 +4,7 @@ django-tastypie
 django_extensions
 python-dateutil
 django_databrowse
+factory_boy
 numpy
 Unipath
 GitPython
