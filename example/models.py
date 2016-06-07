@@ -3,24 +3,24 @@ from django.utils import timezone
 from simple_history.models import HistoricalRecords as AuditTrail
 
 from edc_base.model.models import BaseUuidModel
-from edc_consent.forms.base_consent_form import BaseConsentForm
 from edc_consent.models import BaseConsent, RequiresConsentMixin, BaseSpecimenConsent
 from edc_consent.models.fields import (
     IdentityFieldsMixin, SampleCollectionFieldsMixin, PersonalFieldsMixin,
     VulnerabilityFieldsMixin, SiteFieldsMixin)
-from edc_quota.client.models import QuotaMixin, QuotaManager
+
+# from edc_quota.client.models import QuotaMixin, QuotaManager
 
 
-class ConsentQuotaMixin(QuotaMixin):
-
-    QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
-
-    class Meta:
-        abstract = True
+# class ConsentQuotaMixin(QuotaMixin):
+#
+#     QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
+#
+#     class Meta:
+#         abstract = True
 
 
 class TestConsentModel(
-        BaseConsent, ConsentQuotaMixin, IdentityFieldsMixin, SampleCollectionFieldsMixin,
+        BaseConsent, IdentityFieldsMixin, SampleCollectionFieldsMixin,
         SiteFieldsMixin, PersonalFieldsMixin, VulnerabilityFieldsMixin, BaseUuidModel):
 
     # registered_subject = models.ForeignKey(RegisteredSubject)
@@ -29,10 +29,8 @@ class TestConsentModel(
 
     history = AuditTrail()
 
-    quota = QuotaManager()
-
     class Meta:
-        app_label = 'edc_consent'
+        app_label = 'example'
         unique_together = (
             ('subject_identifier', 'version'),
             ('identity', 'version'),
@@ -45,7 +43,7 @@ class TestConsentModelProxy(TestConsentModel):
     GENDER_OF_CONSENT = ['M']
 
     class Meta:
-        app_label = 'edc_consent'  # required!
+        app_label = 'example'  # required!
         proxy = True
 
 
@@ -64,11 +62,11 @@ class TestModel(RequiresConsentMixin, BaseUuidModel):
     history = AuditTrail()
 
     class Meta:
-        app_label = 'edc_consent'
+        app_label = 'example'
         verbose_name = 'Test Model'
 
 
-class Visit(models.Model):
+class Visit(BaseUuidModel):
 
     subject_identifier = models.CharField(max_length=10)
 
@@ -77,11 +75,11 @@ class Visit(models.Model):
     objects = models.Manager()
 
     class Meta:
-        app_label = 'edc_consent'
+        app_label = 'example'
         verbose_name = 'Visit'
 
 
-class TestScheduledModel(RequiresConsentMixin, models.Model):
+class TestScheduledModel(RequiresConsentMixin, BaseUuidModel):
 
     consent_model = TestConsentModel
 
@@ -95,24 +93,10 @@ class TestScheduledModel(RequiresConsentMixin, models.Model):
         return self.visit.subject_identifier
 
     class Meta:
-        app_label = 'edc_consent'
-
-
-class ConsentForm(BaseConsentForm):
-
-    class Meta:
-        model = TestConsentModel
-        fields = '__all__'
-
-
-class ConsentModelProxyForm(BaseConsentForm):
-
-    class Meta:
-        model = TestConsentModelProxy
-        fields = '__all__'
+        app_label = 'example'
 
 
 class TestSpecimenConsent(BaseSpecimenConsent):
 
     class Meta:
-        app_label = 'edc_consent'
+        app_label = 'example'
