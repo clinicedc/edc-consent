@@ -7,11 +7,35 @@ Add base classes for the Informed Consent form and process.
 	
 Add to settings:
 
-	from django.utils import timezone
+    from django.utils import timezone
+
+    INSTALLED_APPS = [
+        ...
+        'edc_consent.apps.EdcConsentAppConfig',
+        ...
+    ]
 
 	STUDY_OPEN_DATETIME = timezone.datetime(2013, 10, 18)
 
-	
+You may also define your own AppConfig to set the initial data for model `ConsentType`, for example:
+
+    class ConsentAppConfig(EdcConsentAppConfig):
+        consent_type_setup = [
+            {'app_label': 'my_app',
+             'model_name': 'subjectconsent',
+             'start_datetime': datetime(2016, 5, 1, 0, 0, 0),
+             'end_datetime': datetime(2017, 5, 1, 0, 0, 0),
+             'version': '1'}]
+
+And then change settings:
+
+    INSTALLED_APPS = [
+        ...
+        'my_app.apps.ConsentAppConfig',
+        ...
+    ]
+
+
 ## Features
 
 - base class for an informed consent document
