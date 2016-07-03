@@ -1,2 +1,0 @@
-recursive-include edc_consent/templates/ *
-recursive-include edc_consent/static/ *
