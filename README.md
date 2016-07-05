@@ -17,9 +17,10 @@ Add to settings:
 
 	STUDY_OPEN_DATETIME = timezone.datetime(2013, 10, 18)
 
-You may also define your own AppConfig to set the initial data for model `ConsentType`, for example:
+Declare your own AppConfig which will register your consent and its version and period of validity:
 
     class ConsentAppConfig(EdcConsentAppConfig):
+
         consent_type_setup = [
             {'app_label': 'my_app',
              'model_name': 'subjectconsent',
