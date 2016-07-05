@@ -214,10 +214,6 @@ TODO
 By adding the property `consenting_subject_identifier` to the consent
 
 
-## Compatibility with PY2/1.6
-
-`edc_consent` is compatible with the PY2/1.6 version of `edc` and will pull some modules from `edc` if installed.. The most important compatibility problem is with encryption. See the imports in `utils`, `validators` and `encrypted_fields`. 
-
 ## Other TODO
 
 * `TimepointStatus` model update in `save` method of models requiring consent
