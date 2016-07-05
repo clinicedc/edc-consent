@@ -5,6 +5,8 @@ Add base classes for the Informed Consent form and process.
 
 ## Installation
 	
+    pip install git+https://github.com/botswana-harvard/edc-consent@develop#egg=edc_consent
+	
 Add to settings:
 
     from django.utils import timezone
