@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from simple_history.models import HistoricalRecords as AuditTrail
 
 from edc_base.model.models import BaseUuidModel
 from edc_consent.models import BaseConsent, RequiresConsentMixin, BaseSpecimenConsent
@@ -23,11 +22,7 @@ class TestConsentModel(
         BaseConsent, IdentityFieldsMixin, SampleCollectionFieldsMixin,
         SiteFieldsMixin, PersonalFieldsMixin, VulnerabilityFieldsMixin, BaseUuidModel):
 
-    # registered_subject = models.ForeignKey(RegisteredSubject)
-
     objects = models.Manager()
-
-    history = AuditTrail()
 
     class Meta:
         app_label = 'example'
@@ -58,8 +53,6 @@ class TestModel(RequiresConsentMixin, BaseUuidModel):
     field1 = models.CharField(max_length=10)
 
     objects = models.Manager()
-
-    history = AuditTrail()
 
     class Meta:
         app_label = 'example'
