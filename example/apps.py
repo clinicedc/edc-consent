@@ -1,13 +1,14 @@
 from datetime import datetime
-from edc_consent.apps import EdcConsentAppConfig
+from edc_consent.apps import EdcConsentAppConfig as EdcConsentAppConfigParent
 from django.apps.config import AppConfig
 
 
 class ExampleAppConfig(AppConfig):
     name = 'example'
+    institution = 'BHP'
 
 
-class ConsentAppConfig(EdcConsentAppConfig):
+class EdcConsentAppConfig(EdcConsentAppConfigParent):
     consent_type_setup = [
         {'app_label': 'example',
          'model_name': 'testconsentmodel',
