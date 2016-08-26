@@ -3,9 +3,8 @@ from edc_consent.apps import EdcConsentAppConfig as EdcConsentAppConfigParent
 from django.apps.config import AppConfig
 
 
-class ExampleAppConfig(AppConfig):
+class AppConfig(AppConfig):
     name = 'example'
-    institution = 'BHP'
 
 
 class EdcConsentAppConfig(EdcConsentAppConfigParent):

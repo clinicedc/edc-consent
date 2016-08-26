@@ -1,4 +1,5 @@
 Django
+factory-boy
 git+https://github.com/botswana-harvard/edc-base@develop#egg=edc-base
 git+https://github.com/erikvw/django-crypto-fields@develop#egg=django_crypto_fields
 git+https://github.com/botswana-harvard/edc-constants@develop#egg=edc-constants

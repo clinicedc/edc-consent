@@ -22,6 +22,7 @@ setup(
     long_description=README,
     zip_safe=False,
     keywords='django participant ICF',
+    install_requires=['toolz'],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

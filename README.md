@@ -1,43 +1,37 @@
 [![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent) [![Coverage Status](https://coveralls.io/repos/botswana-harvard/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/botswana-harvard/edc-consent?branch=develop)
 
 # edc-consent
-Add base classes for the Informed Consent form and process.
+
+Add classes for the Informed Consent form and process.
 
 ## Installation
 	
     pip install git+https://github.com/botswana-harvard/edc-consent@develop#egg=edc_consent
 	
-Add to settings:
+Declare your own AppConfig, `my_app.apps.py`, which will register your consent model, its version and period of validity. For now we just create a version 1 consent:
 
-    from django.utils import timezone
+    from edc_consent.apps import AppConfig as EdcConsentAppConfigParent
+    from edc_consent.consent import Consent
 
-    INSTALLED_APPS = [
-        ...
-        'edc_consent.apps.EdcConsentAppConfig',
-        ...
-    ]
+    class EdcConsentAppConfig(EdcConsentAppConfigParent):
 
-	STUDY_OPEN_DATETIME = timezone.datetime(2013, 10, 18)
+        consents = [
+            Consent('edc_example.subjectconsent', version='1',
+                    start=timezone.now() - relativedelta(years=1),
+                    end=timezone.now() + relativedelta(years=1))
+        ]
 
-Declare your own AppConfig which will register your consent and its version and period of validity:
-
-    class ConsentAppConfig(EdcConsentAppConfig):
-
-        consent_type_setup = [
-            {'app_label': 'my_app',
-             'model_name': 'subjectconsent',
-             'start_datetime': datetime(2016, 5, 1, 0, 0, 0),
-             'end_datetime': datetime(2017, 5, 1, 0, 0, 0),
-             'version': '1'}]
-
-And then change settings:
+add to settings:
 
     INSTALLED_APPS = [
         ...
-        'my_app.apps.ConsentAppConfig',
+        'my_app.apps.EdcConsentAppConfig',
         ...
     ]
 
+
+
+| _Below needs to be updated_ |
 
 ## Features
 
