@@ -65,12 +65,6 @@ Then declare the consent model:
 
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
 
-		MIN_AGE_OF_CONSENT = 16
-		MAX_AGE_OF_CONSENT = 64
-		AGE_IS_ADULT = 18
-		GENDER_OF_CONSENT = ['M', 'F']	
-		SUBJECT_TYPES = ['subject']
-
     	quota = QuotaManager()
 
 		class Meta:
