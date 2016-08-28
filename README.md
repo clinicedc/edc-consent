@@ -204,7 +204,7 @@ By adding the property `consenting_subject_identifier` to the consent
 
 ## Other TODO
 
-* `TimepointStatus` model update in `save` method of models requiring consent
+* `Timepoint` model update in `save` method of models requiring consent
 * handle added or removed model fields (questions) because of consent version change
 * review verification actions
 * management command to update version on models that require consent (if edc_consent added after instances were created)
