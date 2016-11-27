@@ -10,6 +10,7 @@ Add classes for the Informed Consent form and process.
 	
 Declare your own AppConfig, `my_app.apps.py`, which will register your consent model, its version and period of validity. For now we just create a version 1 consent:
 
+    from edc_base.utils import get_utcnow
     from edc_consent.apps import AppConfig as EdcConsentAppConfigParent
     from edc_consent.consent import Consent
 
@@ -17,8 +18,8 @@ Declare your own AppConfig, `my_app.apps.py`, which will register your consent m
 
         consents = [
             Consent('edc_example.subjectconsent', version='1',
-                    start=timezone.now() - relativedelta(years=1),
-                    end=timezone.now() + relativedelta(years=1))
+                    start=get_utcnow() - relativedelta(years=1),
+                    end=get_utcnow() + relativedelta(years=1))
         ]
 
 add to settings:
