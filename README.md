@@ -8,25 +8,32 @@ Add classes for the Informed Consent form and process.
 	
     pip install git+https://github.com/botswana-harvard/edc-consent@develop#egg=edc_consent
 	
-Declare your own AppConfig, `my_app.apps.py`, which will register your consent model, its version and period of validity. For now we just create a version 1 consent:
+Register your consent model, its version and period of validity, with `site_consents`. `site_consents` will `autodiscover` `consents.py` in any app listed in `INSTALLED_APPS`. For now we just create a version 1 consent. In `consents.py` add something like this: 
 
-    from edc_base.utils import get_utcnow
-    from edc_consent.apps import AppConfig as EdcConsentAppConfigParent
+    import arrow
+    from datetime import datetime
+    
     from edc_consent.consent import Consent
-
-    class EdcConsentAppConfig(EdcConsentAppConfigParent):
-
-        consents = [
-            Consent('edc_example.subjectconsent', version='1',
-                    start=get_utcnow() - relativedelta(years=1),
-                    end=get_utcnow() + relativedelta(years=1))
-        ]
+    from edc_consent.site_consents import site_consents
+    from edc_constants.constants import MALE, FEMALE
+    
+    subjectconsent_v1 = Consent(
+        'edc_example.subjectconsent',
+        version='1',
+        start=arrow.get(datetime(2013, 10, 15)).datetime,
+        end=arrow.get(datetime(2016, 10, 15)).datetime,
+        age_min=16,
+        age_is_adult=18,
+        age_max=64,
+        gender=[MALE, FEMALE])
+    
+    site_consents.register(subjectconsent_v1)
 
 add to settings:
 
     INSTALLED_APPS = [
         ...
-        'my_app.apps.EdcConsentAppConfig',
+        'edc_consent.apps.AppConfig',
         ...
     ]
 
