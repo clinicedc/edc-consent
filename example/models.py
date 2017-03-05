@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from edc_base.model.models import BaseUuidModel
+from edc_base.model_mixins import BaseUuidModel
 from edc_consent.models import BaseConsent, RequiresConsentMixin, BaseSpecimenConsent
 from edc_consent.models.fields import (
     IdentityFieldsMixin, SampleCollectionFieldsMixin, PersonalFieldsMixin,
