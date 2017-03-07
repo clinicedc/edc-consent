@@ -1,55 +1,31 @@
+dist: trusty
+sudo: required
 language: python
 python:
-  - "2.7"
-#  - "3.2"
-#  - "3.3"
-#  - "3.4"
-#  - "nightly"
-env:
-  - DJANGO_VERSION=1.6
-#  - DJANGO_VERSION=1.7
-#  - DJANGO_VERSION=1.8
-
-
-addons:
-  apt_packages:
-     - swig
-     - libssl-dev
-     - libssl0.9.8
-     - python-m2crypto
-     - libcups2-dev
-     - unixodbc-dev
-     - python-mysqldb
-
+- 3.5.1
 services:
-  - mysql
-
+- mysql
 before_install:
-    - "export DISPLAY=:99.0"
-    - "sh -e /etc/init.d/xvfb start"
-    - sleep 3 # give xvfb some time to start
-
-virtualenv:
-  system_site_packages: true
-
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+branches:
+  only:
+  - develop
 install:
-  - pip install --upgrade pip
-  - pip install -q Django==$DJANGO_VERSION
-  - pip install flake8
-  - pip install coveralls
-  - pip install M2Crypto
-  - pip install pyodbc
-  - pip install pycups
-  - pip install mysql-python
-  - pip install -q -r requirements.txt
-
+- pip install --upgrade pip
+- pip install -r requirements.txt
+- pip install flake8
+- pip install coveralls
 before_script:
-  - flake8 edc_consent
-  - mysql -e 'create database mb CHARACTER SET utf8;'
-  - mysql -e 'create database mb_lab CHARACTER SET utf8;'
-
-script: 
-  - coverage run --source=edc_consent manage.py test
-
+- flake8 edc_consent
+- mysql -e 'create database edc character set utf8;'
+- python manage.py makemigrations
+- python manage.py migrate
+script:
+- coverage run --source=edc_consent manage.py test
 after_success:
-  - coveralls
+- coveralls
+notifications:
+  slack:
+    secure: NvZDz/An3vDwqPIaQ6hYm5HlPZsOxrrw2+rL1Jpskfu8Og3Ln4b2Bjmza1YXti4NYh2ka1sJc7zvwkW0thTDtm25BugPTT8VZLkPV+N3O4nkVKK7c0SgdddkvqdirTPkBBUDVCGCBbIImSqDK2Eie2xL4YGxdMIXZHJ67wnN4STWZMdyxHPAc34meogYqHdEEwusGSXQAd1X8gvptDYcNT7REAlVc59BKJ4K+WuTgBgjqv0LcM+aCbES3YrlnV4UfOzKtwV7pOK29V51vZCtfJ6k5PPLIYPbveDqGu1yBClHQQb3ktIwS0ZOfaK6e/mVCXrwNYt1+CdDsTO+o138/P3htxknKJw+BY7lLbroT3+wMP+jDM/XttHi2FFaw9Qdc6P683E6TpIwzlrgyhxlKZOa5hEqycHA+/a7ut0Z5AHnAQfEAFJvSsKO7gK4v6SoxTD7GAUsrw5LhZGNdIbu0TWgtyNJJD714lPlutFmXw1REK7qmHWawm9ld+rEKnco2EPpI1DRklDsDAdt3WehwzMe+XTXSQMmCz470PGlzI0MweL0/lkpix0q1oagTMhjKmKCbNKq9lB+wvkf9tZF5WsUYpJkyZTJEtO3hj/P06zIT2Kt8O+ediwWvJQ2+gFt6I96AdBRDsx64OoFK3rmgWEWeQvGCHruWF+JmGqrlrA=

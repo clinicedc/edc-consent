@@ -1,17 +1,46 @@
 [![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent) [![Coverage Status](https://coveralls.io/repos/botswana-harvard/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/botswana-harvard/edc-consent?branch=develop)
 
 # edc-consent
-Add base classes for the Informed Consent form and process.
+
+Add classes for the Informed Consent form and process.
 
 ## Installation
 	
-Add to settings:
-
-	from django.utils import timezone
-
-	STUDY_OPEN_DATETIME = timezone.datetime(2013, 10, 18)
-
+    pip install git+https://github.com/botswana-harvard/edc-consent@develop#egg=edc_consent
 	
+Register your consent model, its version and period of validity, with `site_consents`. `site_consents` will `autodiscover` `consents.py` in any app listed in `INSTALLED_APPS`. For now we just create a version 1 consent. In `consents.py` add something like this: 
+
+    import arrow
+    from datetime import datetime
+    
+    from edc_consent.consent import Consent
+    from edc_consent.site_consents import site_consents
+    from edc_constants.constants import MALE, FEMALE
+    
+    subjectconsent_v1 = Consent(
+        'edc_example.subjectconsent',
+        version='1',
+        start=arrow.get(datetime(2013, 10, 15)).datetime,
+        end=arrow.get(datetime(2016, 10, 15)).datetime,
+        age_min=16,
+        age_is_adult=18,
+        age_max=64,
+        gender=[MALE, FEMALE])
+    
+    site_consents.register(subjectconsent_v1)
+
+add to settings:
+
+    INSTALLED_APPS = [
+        ...
+        'edc_consent.apps.AppConfig',
+        ...
+    ]
+
+
+
+| _Below needs to be updated_ |
+
 ## Features
 
 - base class for an informed consent document
@@ -43,12 +72,6 @@ First, it's a good idea to limit the number of consents created to match your en
 Then declare the consent model:
 
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
-
-		MIN_AGE_OF_CONSENT = 16
-		MAX_AGE_OF_CONSENT = 64
-		AGE_IS_ADULT = 18
-		GENDER_OF_CONSENT = ['M', 'F']	
-		SUBJECT_TYPES = ['subject']
 
     	quota = QuotaManager()
 
@@ -187,13 +210,9 @@ TODO
 By adding the property `consenting_subject_identifier` to the consent
 
 
-## Compatibility with PY2/1.6
-
-`edc_consent` is compatible with the PY2/1.6 version of `edc` and will pull some modules from `edc` if installed.. The most important compatibility problem is with encryption. See the imports in `utils`, `validators` and `encrypted_fields`. 
-
 ## Other TODO
 
-* `TimepointStatus` model update in `save` method of models requiring consent
+* `Timepoint` model update in `save` method of models requiring consent
 * handle added or removed model fields (questions) because of consent version change
 * review verification actions
 * management command to update version on models that require consent (if edc_consent added after instances were created)

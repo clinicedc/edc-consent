@@ -1,0 +1,5 @@
+include AUTHORS CHANGES README.md LICENCE
+recursive-include edc_consent/templates *
+recursive-include edc_consent/static *
+recursive-exclude edc_example/*
+recursive-exclude etc/*
