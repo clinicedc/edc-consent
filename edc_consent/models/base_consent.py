@@ -112,23 +112,23 @@ class BaseConsent(VerificationFieldsMixin, models.Model):
         self.set_uuid_as_subject_identifier_if_none()
         if not self.id and not self.subject_identifier:
             self.subject_identifier = self.subject_identifier_as_pk
-        consent_type = site_consent_types.get_by_consent_datetime(
-            self.__class__, self.consent_datetime)
-        self.version = consent_type.version
-        if consent_type.updates_version:
-            try:
-                previous_consent = self.__class__.objects.get(
-                    subject_identifier=self.subject_identifier,
-                    identity=self.identity,
-                    version__in=consent_type.updates_version,
-                    **self.additional_filter_options())
-                previous_consent.subject_identifier_as_pk = self.subject_identifier_as_pk
-                previous_consent.subject_identifier_aka = self.subject_identifier_aka
-            except self.__class__.DoesNotExist:
-                raise ConsentVersionError(
-                    'Previous consent with version {0} for this subject not found. Version {1} updates {0}.'
-                    'Ensure all details match (identity, dob, first_name, last_name)'.format(
-                        consent_type.updates_version, self.version))
+#         consent_type = site_consent_types.get_by_consent_datetime(
+#             self.__class__, self.consent_datetime)
+#         self.version = consent_type.version
+#         if consent_type.updates_version:
+#             try:
+#                 previous_consent = self.__class__.objects.get(
+#                     subject_identifier=self.subject_identifier,
+#                     identity=self.identity,
+#                     version__in=consent_type.updates_version,
+#                     **self.additional_filter_options())
+#                 previous_consent.subject_identifier_as_pk = self.subject_identifier_as_pk
+#                 previous_consent.subject_identifier_aka = self.subject_identifier_aka
+#             except self.__class__.DoesNotExist:
+#                 raise ConsentVersionError(
+#                     'Previous consent with version {0} for this subject not found. Version {1} updates {0}.'
+#                     'Ensure all details match (identity, dob, first_name, last_name)'.format(
+#                         consent_type.updates_version, self.version))
         super(BaseConsent, self).save(*args, **kwargs)
 
     def set_uuid_as_subject_identifier_if_none(self):

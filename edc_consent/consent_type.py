@@ -70,7 +70,8 @@ class SiteConsentTypes:
             if item.valid_for_model(consent_type.model_class):
                 if (item.valid_for_datetime(consent_type.start_datetime) and
                         item.valid_for_datetime(consent_type.end_datetime)):
-                    raise AlreadyRegistered('Consent type already registered. Got {}'.format(str(consent_type)))
+                    pass
+#                     raise AlreadyRegistered('Consent type already registered. Got {}'.format(str(consent_type)))
         self.check_version(consent_type)
         self.check_updates_version(consent_type)
         self.check_consent_period(consent_type)
@@ -131,24 +132,25 @@ class SiteConsentTypes:
             if ct.app_label == consent_type.app_label and ct.model_name == consent_type.model_name:
                 if (consent_type.start_datetime <= ct.start_datetime <= consent_type.end_datetime or
                         consent_type.start_datetime <= ct.end_datetime <= consent_type.end_datetime):
-                    raise AlreadyRegistered(
-                        'Consent period for version {0} overlaps with version \'{1}\'. '
-                        'Got {2} to {3} overlaps with {4} to {5}.'.format(
-                            consent_type.updates_version, consent_type.version,
-                            ct.start_datetime.strftime('%Y-%m-%d'),
-                            ct.end_datetime.strftime('%Y-%m-%d'),
-                            consent_type.start_datetime.strftime('%Y-%m-%d'),
-                            consent_type.end_datetime.strftime('%Y-%m-%d')))
+                    pass
+#                     raise AlreadyRegistered(
+#                         'Consent period for version {0} overlaps with version \'{1}\'. '
+#                         'Got {2} to {3} overlaps with {4} to {5}.'.format(
+#                             consent_type.updates_version, consent_type.version,
+#                             ct.start_datetime.strftime('%Y-%m-%d'),
+#                             ct.end_datetime.strftime('%Y-%m-%d'),
+#                             consent_type.start_datetime.strftime('%Y-%m-%d'),
+#                             consent_type.end_datetime.strftime('%Y-%m-%d')))
 
-    def get_by_consent_datetime(self, consent_model, consent_datetime, exception_cls=None):
+    def get_by_consent_datetime(self, consent_model, consent_datetime, version=None, exception_cls=None):
         return self.get_by_datetime(
-            consent_model, consent_datetime, exception_cls=exception_cls)
+            consent_model, consent_datetime, version=version, exception_cls=exception_cls)
 
     def get_by_report_datetime(self, consent_model, report_datetime, exception_cls=None):
         return self.get_by_datetime(
             consent_model, report_datetime, exception_cls=exception_cls)
 
-    def get_by_datetime(self, model, my_datetime, exception_cls=None):
+    def get_by_datetime(self, model, my_datetime, version=None,  exception_cls=None):
         """Return consent type object valid for the datetime."""
         exception_cls = exception_cls or ConsentTypeError
         consent_types = []
@@ -162,9 +164,37 @@ class SiteConsentTypes:
                     model,
                     my_datetime.isoformat()))
         if len(consent_types) > 1:
+            if version:
+                for consent_type in consent_types:
+                    if consent_type.version == version:
+                        return consent_type
+            else:
+                raise exception_cls(
+                    'More than one consent version found for date. '
+                    'Check consent_type_setup in AppConfig for {}'.format(model))
+        return consent_types[0]
+
+    def get_by_datetime_lastest_version(self, model, my_datetime, exception_cls=None):
+        """Return consent type object valid for the datetime."""
+        exception_cls = exception_cls or ConsentTypeError
+        consent_types = []
+        versions = []
+        for consent_type in self.registry:
+            if consent_type.valid_for_model(model) and consent_type.valid_for_datetime(my_datetime):
+                consent_types.append(consent_type)
+        if not consent_types:
             raise exception_cls(
-                'More than one consent version found for date. '
-                'Check consent_type_setup in AppConfig for {}'.format(model))
+                'Cannot find a version for consent \'{}\' using date \'{}\'. '
+                'Check consent_type_setup in AppConfig.'.format(
+                    model,
+                    my_datetime.isoformat()))
+        if len(consent_types) > 1:
+            for consent_type in consent_types:
+                versions.append(consent_type.version)
+            versions.sort()
+        for consent_type in consent_types:
+            if consent_type.version == versions[-1]:
+                return consent_type
         return consent_types[0]
 
 site_consent_types = SiteConsentTypes()
