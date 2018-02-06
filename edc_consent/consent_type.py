@@ -168,10 +168,10 @@ class SiteConsentTypes:
                 for consent_type in consent_types:
                     if consent_type.version == version:
                         return consent_type
-            else:
-                raise exception_cls(
-                    'More than one consent version found for date. '
-                    'Check consent_type_setup in AppConfig for {}'.format(model))
+#             else:
+#                 raise exception_cls(
+#                     'More than one consent version found for date. '
+#                     'Check consent_type_setup in AppConfig for {}'.format(model))
         return consent_types[0]
 
     def get_by_datetime_lastest_version(self, model, my_datetime, exception_cls=None):
@@ -192,9 +192,9 @@ class SiteConsentTypes:
             for consent_type in consent_types:
                 versions.append(consent_type.version)
             versions.sort()
-        for consent_type in consent_types:
-            if consent_type.version == versions[-1]:
-                return consent_type
+            for consent_type in consent_types:
+                if consent_type.version == versions[-1]:
+                    return consent_type
         return consent_types[0]
 
 site_consent_types = SiteConsentTypes()
