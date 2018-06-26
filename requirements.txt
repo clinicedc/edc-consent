@@ -20,3 +20,4 @@ git+https://github.com/clinicedc/edc-label#egg=edc-label
 git+https://github.com/clinicedc/edc-navbar#egg=edc-navbar
 git+https://github.com/clinicedc/edc-model-wrapper#egg=edc-model-wrapper
 git+https://github.com/clinicedc/edc-model-fields@develop#egg=edc-model-fields
+git+https://github.com/clinicedc/edc-action-item@develop#egg=edc-action-item
