@@ -21,3 +21,6 @@ git+https://github.com/clinicedc/edc-navbar#egg=edc-navbar
 git+https://github.com/clinicedc/edc-model-wrapper#egg=edc-model-wrapper
 git+https://github.com/clinicedc/edc-model-fields@develop#egg=edc-model-fields
 git+https://github.com/clinicedc/edc-action-item@develop#egg=edc-action-item
+git+https://github.com/clinicedc/edc-prn@develop#egg=edc-prn
+git+https://github.com/clinicedc/edc-locator@develop#egg=edc-locator
+git+https://github.com/clinicedc/edc-visit-schedule@develop#egg=edc-visit-schedule
