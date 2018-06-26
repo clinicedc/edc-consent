@@ -16,7 +16,7 @@ setup(
     author_email='ew2789@gmail.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/botswana-harvard/edc-consent',
+    url='https://github.com/clinicedc/edc-consent',
     license='GPL license, see LICENSE',
     description='Base models, forms and admin for participant ICF in the Edc.',
     long_description=README,

@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/botswana-harvard/edc-consent.svg?branch=develop)](https://travis-ci.org/botswana-harvard/edc-consent) [![Coverage Status](https://coveralls.io/repos/botswana-harvard/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/botswana-harvard/edc-consent?branch=develop)
+[![Build Status](https://travis-ci.org/clinicedc/edc-consent.svg?branch=develop)](https://travis-ci.org/clinicedc/edc-consent) [![Coverage Status](https://coveralls.io/repos/clinicedc/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/clinicedc/edc-consent?branch=develop)
 
 # edc-consent
 
@@ -6,7 +6,7 @@ Add classes for the Informed Consent form and process.
 
 ## Installation
 	
-    pip install git+https://github.com/botswana-harvard/edc-consent@develop#egg=edc_consent
+    pip install git+https://github.com/clinicedc/edc-consent@develop#egg=edc_consent
 	
 Register your consent model, its version and period of validity, with `site_consents`. `site_consents` will `autodiscover` `consents.py` in any app listed in `INSTALLED_APPS`. For now we just create a version 1 consent. In `consents.py` add something like this: 
 
