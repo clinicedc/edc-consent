@@ -1,14 +1,17 @@
-[![Build Status](https://travis-ci.org/clinicedc/edc-consent.svg?branch=develop)](https://travis-ci.org/clinicedc/edc-consent) [![Coverage Status](https://coveralls.io/repos/clinicedc/edc-consent/badge.svg?branch=develop&service=github)](https://coveralls.io/github/clinicedc/edc-consent?branch=develop)
+|pypi| |travis| |coverage|
 
-# edc-consent
+edc-consent
+-----------
 
 Add classes for the Informed Consent form and process.
 
-## Installation
-	
-    pip install git+https://github.com/clinicedc/edc-consent@develop#egg=edc_consent
-	
-Register your consent model, its version and period of validity, with `site_consents`. `site_consents` will `autodiscover` `consents.py` in any app listed in `INSTALLED_APPS`. For now we just create a version 1 consent. In `consents.py` add something like this: 
+Installation
+============
+		
+Register your consent model, its version and period of validity, with ``site_consents``. ``site_consents`` will ``autodiscover`` ``consents.py`` in any app listed in ``INSTALLED_APPS``. For now we just create a version 1 consent. In ``consents.py`` add something like this: 
+
+
+.. code-block:: python
 
     import arrow
     from datetime import datetime
@@ -31,6 +34,8 @@ Register your consent model, its version and period of validity, with `site_cons
 
 add to settings:
 
+.. code-block:: python
+
     INSTALLED_APPS = [
         ...
         'edc_consent.apps.AppConfig',
@@ -39,26 +44,31 @@ add to settings:
 
 
 
-| _Below needs to be updated_ |
+ Below needs to be updated
 
-## Features
+Features
+========
 
-- base class for an informed consent document
-- data for models that require consent cannot be add until the consent is added
-- consents have a version number and validity period
-- maximum number of consented subjects can be controlled.
-- data collection is only allowed within the validity period of the consent per consented participant
-- data for models that require consent are tagged with the consent version
+* base class for an informed consent document
+* data for models that require consent cannot be add until the consent is added
+* consents have a version number and validity period
+* maximum number of consented subjects can be controlled.
+* data collection is only allowed within the validity period of the consent per consented participant
+* data for models that require consent are tagged with the consent version
 
-## TODO
+TODO
+====
 
 - link subject type to the consent model. e.g. maternal, infant, adult, etc.
 - version at model field level (e.g. a new consent period adds additional questions to a form)
 - allow a different subject's consent to cover for another, for example mother and infant. 
 
-## Usage
+Usage
+=====
 
 First, it's a good idea to limit the number of consents created to match your enrollment targets. Do this by creating a mixin for the consent model class:
+
+.. code-block:: python
 
 	from edc_quota.client.models import QuotaMixin, QuotaManager
 
@@ -71,6 +81,8 @@ First, it's a good idea to limit the number of consents created to match your en
 
 Then declare the consent model:
 
+.. code-block:: python
+
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
 
     	quota = QuotaManager()
@@ -80,6 +92,8 @@ Then declare the consent model:
 
 Declare the ModelForm:
 
+.. code-block:: python
+
 	class MyConsentForm(BaseConsentForm):
 
 		class Meta:
@@ -87,6 +101,8 @@ Declare the ModelForm:
 	
 
 Now that you have a consent model class, identify and declare the models that will require this consent:
+
+.. code-block:: python
 
 	class Questionnaire(RequiresConsentMixin, models.Model):
 
@@ -112,32 +128,36 @@ Now that you have a consent model class, identify and declare the models that wi
 Notice above the first two class attributes, namely:
 
 * consent_model: this is the consent model class that was declared above;
-* report_datetime: a required field used to lookup the correct consent version from ConsentType and to find, together with `subject_identifier`,  a valid instance of `MyConsent`;
+* report_datetime: a required field used to lookup the correct consent version from ConsentType and to find, together with ``subject_identifier``,  a valid instance of ``MyConsent``;
 
-Also note the property `subject_identifier`. 
+Also note the property ``subject_identifier``. 
 
-* subject_identifier: a required property that knows how to find the `subject_identifier` for the instance of `Questionnaire`.  
+* subject_identifier: a required property that knows how to find the ``subject_identifier`` for the instance of ``Questionnaire``.  
 
 Once all is declared you need to:
 
-* define the consent version and validity period for the consent version in `ConsentType`;
+* define the consent version and validity period for the consent version in ``ConsentType``;
 * add a Quota for the consent model.
 
 As subjects are identified:
 
 * add a consent
-* add the models (e.g. `Questionnaire`)
+* add the models (e.g. ``Questionnaire``)
 
-If a consent version cannot be found given the consent model class and report_datetime a `ConsentTypeError` is raised.
+If a consent version cannot be found given the consent model class and report_datetime a ``ConsentTypeError`` is raised.
 
-If a consent for this subject_identifier cannot be found that matches the `ConsentType` a `NotConsentedError` is raised.
+If a consent for this subject_identifier cannot be found that matches the ``ConsentType`` a ``NotConsentedError`` is raised.
 
-## Specimen Consent
+Specimen Consent
+================
+
 A participant may consent to the study but not agree to have specimens stored long term. A specimen consent is administered separately to clarify the participant\'s intention.
 
-The specimen consent is declared using the base class `BaseSpecimenConsent`. This is an abridged version of `BaseConsent`. The specimen consent also uses the `RequiresConsentMixin` as it cannot stand alone as an ICF. The `RequiresConsentMixin` ensures the specimen consent is administered after the main study ICF, in this case `MyStudyConsent`.
+The specimen consent is declared using the base class ``BaseSpecimenConsent``. This is an abridged version of ``BaseConsent``. The specimen consent also uses the ``RequiresConsentMixin`` as it cannot stand alone as an ICF. The ``RequiresConsentMixin`` ensures the specimen consent is administered after the main study ICF, in this case ``MyStudyConsent``.
 
 A specimen consent is declared in your app like this: 
+
+.. code-block:: python
 
         class SpecimenConsent(BaseSpecimenConsent, SampleCollectionFieldsMixin, RequiresConsentMixin,
                               VulnerabilityFieldsMixin, AppointmentMixin, BaseUuidModel):
@@ -155,9 +175,12 @@ A specimen consent is declared in your app like this:
             verbose_name = 'Specimen Consent'
  
 
-## Validators
+Validators
+==========
 
-The `ConsentAgeValidator` validates the date of birth to within a given age range, for example:
+The ``ConsentAgeValidator`` validates the date of birth to within a given age range, for example:
+
+.. code-block:: python
 
 	from edc_consent.validtors import ConsentAgeValidator
 	
@@ -171,7 +194,9 @@ The `ConsentAgeValidator` validates the date of birth to within a given age rang
 		class Meta:
 			app_label = 'my_app'
 
-The `PersonalFieldsMixin` includes a date of birth field and you can set the age bounds like this:
+The ``PersonalFieldsMixin`` includes a date of birth field and you can set the age bounds like this:
+
+.. code-block:: python
 
 	from edc_consent.validtors import ConsentAgeValidator
 	from edc_consent.models.fields import PersonalFieldsMixin
@@ -187,32 +212,39 @@ The `PersonalFieldsMixin` includes a date of birth field and you can set the age
 			app_label = 'my_app'
 
 
-## Common senarios
+Common senarios
+===============
 
-### Tracking the consent version with collected data
+Tracking the consent version with collected data
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-All model data is tagged with the consent version identified in `ConsentType` for the consent model class and report_datetime.
+All model data is tagged with the consent version identified in ``ConsentType`` for the consent model class and report_datetime.
 
-### Reconsenting consented subjects when the consent changes
+Reconsenting consented subjects when the consent changes
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-The consent model is unique on subject_identifier, identity and version. If a new consent version is added to `ConsentType`, a new consent will be required for each subject as data is reported within the validity period of the new consent.
+The consent model is unique on subject_identifier, identity and version. If a new consent version is added to ``ConsentType``, a new consent will be required for each subject as data is reported within the validity period of the new consent.
 
 Some care must be taken to ensure that the consent model is queried with an understanding of the unique constraint. 
 
-### Linking the consent version to added or removed model fields on models that require consent
+
+Linking the consent version to added or removed model fields on models that require consent
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 TODO
 
-### Infants use mother's consent
+Infants use mother's consent
+++++++++++++++++++++++++++++
 
 TODO
 
-By adding the property `consenting_subject_identifier` to the consent
+By adding the property ``consenting_subject_identifier`` to the consent
 
 
-## Other TODO
+Other TODO
+==========
 
-* `Timepoint` model update in `save` method of models requiring consent
+* ``Timepoint`` model update in ``save`` method of models requiring consent
 * handle added or removed model fields (questions) because of consent version change
 * review verification actions
 * management command to update version on models that require consent (if edc_consent added after instances were created)
@@ -220,5 +252,11 @@ By adding the property `consenting_subject_identifier` to the consent
 
 
 
- 
-
+.. |pypi| image:: https://img.shields.io/pypi/v/edc-consent.svg
+    :target: https://pypi.python.org/pypi/edc-consent
+    
+.. |travis| image:: https://travis-ci.org/clinicedc/edc-consent.svg?branch=develop
+    :target: https://travis-ci.org/clinicedc/edc-consent
+    
+.. |coverage| image:: https://coveralls.io/repos/github/clinicedc/edc-consent/badge.svg?branch=develop
+    :target: https://coveralls.io/github/clinicedc/edc-consent?branch=develop
