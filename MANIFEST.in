@@ -1,4 +1,4 @@
-include AUTHORS CHANGES README LICENCE VERSION
+include AUTHORS CHANGES README LICENSE VERSION
 recursive-include edc_consent/templates *
 recursive-include edc_consent/static *
 recursive-exclude edc_example/*
