@@ -25,7 +25,12 @@ setup(
     long_description=README,
     zip_safe=False,
     keywords='django participant ICF',
-    install_requires=['toolz'],
+    install_requires=[
+        'edc-base',
+        'edc-consent',
+        'edc_model_admin',
+        'edc_registration',
+        'toolz'],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
