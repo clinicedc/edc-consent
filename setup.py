@@ -21,7 +21,8 @@ setup(
     include_package_data=True,
     url='https://github.com/clinicedc/edc-consent',
     license='GPL license, see LICENSE',
-    description='Base models, forms and admin for participant ICF for clinicedc/edc projects.',
+    description=('Base models, forms and admin for participant ICF for '
+                 'clinicedc/edc projects.'),
     long_description=README,
     zip_safe=False,
     keywords='django participant ICF',
