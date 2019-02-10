@@ -1,4 +1,4 @@
-|pypi| |travis| |coverage|
+|pypi| |travis| |codecov| |downloads|
 
 edc-consent
 -----------
@@ -258,5 +258,8 @@ Other TODO
 .. |travis| image:: https://travis-ci.org/clinicedc/edc-consent.svg?branch=develop
     :target: https://travis-ci.org/clinicedc/edc-consent
     
-.. |coverage| image:: https://coveralls.io/repos/github/clinicedc/edc-consent/badge.svg?branch=develop
-    :target: https://coveralls.io/github/clinicedc/edc-consent?branch=develop
+.. |codecov| image:: https://codecov.io/gh/clinicedc/edc-consent/branch/develop/graph/badge.svg
+  :target: https://codecov.io/gh/clinicedc/edc-consent
+
+.. |downloads| image:: https://pepy.tech/badge/edc-consent
+   :target: https://pepy.tech/project/edc-consent
