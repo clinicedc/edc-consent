@@ -1,5 +1,6 @@
-include AUTHORS CHANGES README LICENSE VERSION
+include AUTHORS CHANGES LICENSE VERSION
+include MANIFEST.in
+include *.rst
+include *.txt
 recursive-include edc_consent/templates *
 recursive-include edc_consent/static *
-recursive-exclude edc_example/*
-recursive-exclude etc/*
