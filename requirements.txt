@@ -1,5 +1,0 @@
-edc-locator
-edc-notification
-edc-visit-schedule
-model-mommy
-faker
