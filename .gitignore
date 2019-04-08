@@ -1,18 +1,35 @@
+django_crypto_fields
+.settings
+.project
+.pydevproject
+test-*
 db.sqlite3
+
+
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-.project
-.pydevproject
-.settings
-test-*
-edc_consent/db.sqlite3
+_build/
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
-keys/
 env/
 build/
 develop-eggs/
