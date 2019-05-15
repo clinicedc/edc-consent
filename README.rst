@@ -221,7 +221,7 @@ Tracking the consent version with collected data
 All model data is tagged with the consent version identified in ``ConsentType`` for the consent model class and report_datetime.
 
 Reconsenting consented subjects when the consent changes
-++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The consent model is unique on subject_identifier, identity and version. If a new consent version is added to ``ConsentType``, a new consent will be required for each subject as data is reported within the validity period of the new consent.
 
@@ -229,7 +229,7 @@ Some care must be taken to ensure that the consent model is queried with an unde
 
 
 Linking the consent version to added or removed model fields on models that require consent
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 TODO
 
