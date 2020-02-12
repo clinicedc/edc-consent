@@ -1,6 +1,6 @@
 edc-locator
 edc-notification
 edc-visit-schedule
-model-mommy
+model-bakery
 faker
 edc-test-utils
