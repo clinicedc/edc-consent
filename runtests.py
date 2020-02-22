@@ -9,7 +9,6 @@ from django.test.runner import DiscoverRunner
 from edc_test_utils import DefaultTestSettings
 from os.path import abspath, dirname
 
-
 app_name = 'edc_consent'
 base_dir = dirname(abspath(__file__))
 
@@ -18,6 +17,7 @@ DEFAULT_SETTINGS = DefaultTestSettings(
     BASE_DIR=base_dir,
     APP_NAME=app_name,
     ETC_DIR=os.path.join(base_dir, app_name, "tests", "etc"),
+    EDC_NAVBAR_DEFAULT="edc_consent",
     INSTALLED_APPS=[
         "django.contrib.admin",
         "django.contrib.auth",
