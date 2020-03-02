@@ -4,10 +4,13 @@ import logging
 import os
 import sys
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test.runner import DiscoverRunner
 from edc_test_utils import DefaultTestSettings
 from os.path import abspath, dirname
+
+from edc_utils import get_utcnow
 
 app_name = 'edc_consent'
 base_dir = dirname(abspath(__file__))
@@ -18,6 +21,8 @@ DEFAULT_SETTINGS = DefaultTestSettings(
     APP_NAME=app_name,
     ETC_DIR=os.path.join(base_dir, app_name, "tests", "etc"),
     EDC_NAVBAR_DEFAULT="edc_consent",
+    EDC_PROTOCOL_STUDY_OPEN_DATETIME=get_utcnow() - relativedelta(years=1),
+    EDC_PROTOCOL_STUDY_CLOSE_DATETIME=get_utcnow() + relativedelta(years=1),
     INSTALLED_APPS=[
         "django.contrib.admin",
         "django.contrib.auth",
