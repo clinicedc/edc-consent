@@ -12,7 +12,7 @@ from os.path import abspath, dirname
 
 from edc_utils import get_utcnow
 
-app_name = 'edc_consent'
+app_name = "edc_consent"
 base_dir = dirname(abspath(__file__))
 
 DEFAULT_SETTINGS = DefaultTestSettings(
@@ -57,10 +57,12 @@ def main():
     if not settings.configured:
         settings.configure(**DEFAULT_SETTINGS)
     django.setup()
-    tags = [t.split('=')[1] for t in sys.argv if t.startswith('--tag')]
-    failures = DiscoverRunner(failfast=False, tags=tags).run_tests(
-        [f'{app_name}.tests'])
-    sys.exit(bool(failures))
+    tags = [t.split("=")[1] for t in sys.argv if t.startswith("--tag")]
+    failfast = any([True for t in sys.argv if t.startswith("--failfast")])
+    failures = DiscoverRunner(failfast=failfast, tags=tags).run_tests(
+        [f"{app_name}.tests"]
+    )
+    sys.exit(failures)
 
 
 if __name__ == "__main__":
