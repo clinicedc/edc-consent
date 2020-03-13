@@ -255,8 +255,8 @@ Other TODO
 .. |pypi| image:: https://img.shields.io/pypi/v/edc-consent.svg
     :target: https://pypi.python.org/pypi/edc-consent
     
-.. |travis| image:: https://travis-ci.org/clinicedc/edc-consent.svg?branch=develop
-    :target: https://travis-ci.org/clinicedc/edc-consent
+.. |travis| image:: https://travis-ci.com/clinicedc/edc-consent.svg?branch=develop
+    :target: https://travis-ci.com/clinicedc/edc-consent
     
 .. |codecov| image:: https://codecov.io/gh/clinicedc/edc-consent/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/clinicedc/edc-consent
