@@ -31,6 +31,7 @@ DEFAULT_SETTINGS = DefaultTestSettings(
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "django.contrib.sites",
+        "multisite",
         "simple_history",
         "django_crypto_fields.apps.AppConfig",
         "django_revision.apps.AppConfig",
