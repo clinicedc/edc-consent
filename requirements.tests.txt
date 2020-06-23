@@ -12,6 +12,7 @@ edc-action-item
 edc-adverse-event
 edc-appointment
 edc-auth
+edc-clinic
 edc-consent
 edc-constants
 edc-crf
