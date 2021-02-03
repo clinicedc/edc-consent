@@ -1,19 +1,21 @@
 #!/usr/bin/env python
-import django
+
+
 import logging
 import os
 import sys
+from os.path import abspath, dirname
 
+import django
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test.runner import DiscoverRunner
 from edc_test_utils import DefaultTestSettings
-from os.path import abspath, dirname
-
 from edc_utils import get_utcnow
 
 app_name = "edc_consent"
 base_dir = dirname(abspath(__file__))
+
 
 DEFAULT_SETTINGS = DefaultTestSettings(
     calling_file=__file__,
@@ -62,9 +64,7 @@ def main():
     django.setup()
     tags = [t.split("=")[1] for t in sys.argv if t.startswith("--tag")]
     failfast = any([True for t in sys.argv if t.startswith("--failfast")])
-    failures = DiscoverRunner(failfast=failfast, tags=tags).run_tests(
-        [f"{app_name}.tests"]
-    )
+    failures = DiscoverRunner(failfast=failfast, tags=tags).run_tests([f"{app_name}.tests"])
     sys.exit(failures)
 
 
