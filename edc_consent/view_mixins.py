@@ -7,8 +7,7 @@ from .site_consents import site_consents
 
 class ConsentViewMixin(ContextMixin):
 
-    """Declare with edc_appointment view mixin to get `appointment`.
-    """
+    """Declare with edc_appointment view mixin to get `appointment`."""
 
     consent_model_wrapper_cls = None
 
@@ -16,6 +15,16 @@ class ConsentViewMixin(ContextMixin):
         super().__init__(**kwargs)
         self._consent = None
         self._consents = None
+
+    # @property
+    # @abstractmethod
+    # def appointment(self):
+    #     pass
+    #
+    # @property
+    # @abstractmethod
+    # def subject_identifier(self):
+    #     pass
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -54,8 +63,7 @@ class ConsentViewMixin(ContextMixin):
 
     @property
     def consent(self):
-        """Returns a consent model instance or None for the current period.
-        """
+        """Returns a consent model instance or None for the current period."""
         return self.consent_object.model_cls.consent.consent_for_period(
             subject_identifier=self.subject_identifier,
             report_datetime=self.report_datetime,
@@ -82,8 +90,7 @@ class ConsentViewMixin(ContextMixin):
 
     @property
     def consents(self):
-        """Returns a Queryset of consents for this subject.
-        """
+        """Returns a Queryset of consents for this subject."""
         return self.consent_object.model_cls.objects.filter(
             subject_identifier=self.subject_identifier
         ).order_by("version")

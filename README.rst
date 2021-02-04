@@ -1,4 +1,4 @@
-|pypi| |travis| |codecov| |downloads|
+|pypi| |actions| |codecov| |downloads|
 
 edc-consent
 -----------
@@ -7,19 +7,19 @@ Add classes for the Informed Consent form and process.
 
 Installation
 ============
-		
-Register your consent model, its version and period of validity, with ``site_consents``. ``site_consents`` will ``autodiscover`` ``consents.py`` in any app listed in ``INSTALLED_APPS``. For now we just create a version 1 consent. In ``consents.py`` add something like this: 
+
+Register your consent model, its version and period of validity, with ``site_consents``. ``site_consents`` will ``autodiscover`` ``consents.py`` in any app listed in ``INSTALLED_APPS``. For now we just create a version 1 consent. In ``consents.py`` add something like this:
 
 
 .. code-block:: python
 
     import arrow
     from datetime import datetime
-    
+
     from edc_consent.consent import Consent
     from edc_consent.site_consents import site_consents
     from edc_constants.constants import MALE, FEMALE
-    
+
     subjectconsent_v1 = Consent(
         'edc_example.subjectconsent',
         version='1',
@@ -29,7 +29,7 @@ Register your consent model, its version and period of validity, with ``site_con
         age_is_adult=18,
         age_max=64,
         gender=[MALE, FEMALE])
-    
+
     site_consents.register(subjectconsent_v1)
 
 add to settings:
@@ -61,7 +61,7 @@ TODO
 
 - link subject type to the consent model. e.g. maternal, infant, adult, etc.
 - version at model field level (e.g. a new consent period adds additional questions to a form)
-- allow a different subject's consent to cover for another, for example mother and infant. 
+- allow a different subject's consent to cover for another, for example mother and infant.
 
 Usage
 =====
@@ -73,9 +73,9 @@ First, it's a good idea to limit the number of consents created to match your en
 	from edc_quota.client.models import QuotaMixin, QuotaManager
 
 	class ConsentQuotaMixin(QuotaMixin):
-	
+
 	    QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
-	
+
 	    class Meta:
 	            abstract = True
 
@@ -98,7 +98,7 @@ Declare the ModelForm:
 
 		class Meta:
 			model = MyConsent
-	
+
 
 Now that you have a consent model class, identify and declare the models that will require this consent:
 
@@ -124,15 +124,15 @@ Now that you have a consent model class, identify and declare the models that wi
     class Meta:
         app_label = 'my_app'
         verbose_name = 'My Questionnaire'
-	
+
 Notice above the first two class attributes, namely:
 
 * consent_model: this is the consent model class that was declared above;
 * report_datetime: a required field used to lookup the correct consent version from ConsentType and to find, together with ``subject_identifier``,  a valid instance of ``MyConsent``;
 
-Also note the property ``subject_identifier``. 
+Also note the property ``subject_identifier``.
 
-* subject_identifier: a required property that knows how to find the ``subject_identifier`` for the instance of ``Questionnaire``.  
+* subject_identifier: a required property that knows how to find the ``subject_identifier`` for the instance of ``Questionnaire``.
 
 Once all is declared you need to:
 
@@ -155,7 +155,7 @@ A participant may consent to the study but not agree to have specimens stored lo
 
 The specimen consent is declared using the base class ``BaseSpecimenConsent``. This is an abridged version of ``BaseConsent``. The specimen consent also uses the ``RequiresConsentMixin`` as it cannot stand alone as an ICF. The ``RequiresConsentMixin`` ensures the specimen consent is administered after the main study ICF, in this case ``MyStudyConsent``.
 
-A specimen consent is declared in your app like this: 
+A specimen consent is declared in your app like this:
 
 .. code-block:: python
 
@@ -173,7 +173,7 @@ A specimen consent is declared in your app like this:
         class Meta:
             app_label = 'my_app'
             verbose_name = 'Specimen Consent'
- 
+
 
 Validators
 ==========
@@ -183,7 +183,7 @@ The ``ConsentAgeValidator`` validates the date of birth to within a given age ra
 .. code-block:: python
 
 	from edc_consent.validtors import ConsentAgeValidator
-	
+
 	class MyConsent(ConsentQuotaMixin, BaseConsent):
 
 		dob = models.DateField(
@@ -200,9 +200,9 @@ The ``PersonalFieldsMixin`` includes a date of birth field and you can set the a
 
 	from edc_consent.validtors import ConsentAgeValidator
 	from edc_consent.models.fields import PersonalFieldsMixin
-	
+
 	class MyConsent(ConsentQuotaMixin, PersonalFieldsMixin, BaseConsent):
-	
+
     	quota = QuotaManager()
 
         MIN_AGE_OF_CONSENT = 18
@@ -225,7 +225,7 @@ Reconsenting consented subjects when the consent changes
 
 The consent model is unique on subject_identifier, identity and version. If a new consent version is added to ``ConsentType``, a new consent will be required for each subject as data is reported within the validity period of the new consent.
 
-Some care must be taken to ensure that the consent model is queried with an understanding of the unique constraint. 
+Some care must be taken to ensure that the consent model is queried with an understanding of the unique constraint.
 
 
 Linking the consent version to added or removed model fields on models that require consent
@@ -254,10 +254,10 @@ Other TODO
 
 .. |pypi| image:: https://img.shields.io/pypi/v/edc-consent.svg
     :target: https://pypi.python.org/pypi/edc-consent
-    
-.. |travis| image:: https://travis-ci.com/clinicedc/edc-consent.svg?branch=develop
-    :target: https://travis-ci.com/clinicedc/edc-consent
-    
+
+.. |actions| image:: https://github.com/clinicedc/edc-consent/workflows/build/badge.svg?branch=develop
+  :target: https://github.com/clinicedc/edc-consent/actions?query=workflow:build
+
 .. |codecov| image:: https://codecov.io/gh/clinicedc/edc-consent/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/clinicedc/edc-consent
 
