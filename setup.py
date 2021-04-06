@@ -43,5 +43,5 @@ setup(
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
