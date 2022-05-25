@@ -35,7 +35,6 @@ DEFAULT_SETTINGS = DefaultTestSettings(
         "django.contrib.sites",
         "multisite",
         "simple_history",
-        "import_export",
         "django_crypto_fields.apps.AppConfig",
         "django_revision.apps.AppConfig",
         "edc_appointment.apps.AppConfig",
