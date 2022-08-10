@@ -13,8 +13,8 @@ Register your consent model, its version and period of validity, with ``site_con
 
 .. code-block:: python
 
-    import arrow
     from datetime import datetime
+    from zoneifo import ZoneInfo
 
     from edc_consent.consent import Consent
     from edc_consent.site_consents import site_consents
@@ -23,8 +23,8 @@ Register your consent model, its version and period of validity, with ``site_con
     subjectconsent_v1 = Consent(
         'edc_example.subjectconsent',
         version='1',
-        start=arrow.get(datetime(2013, 10, 15)).datetime,
-        end=arrow.get(datetime(2016, 10, 15)).datetime,
+        start=datetime(2013, 10, 15, tzinfo=ZoneInfo("UTC")),
+        end=datetime(2016, 10, 15, tzinfo=ZoneInfo("UTC")),
         age_min=16,
         age_is_adult=18,
         age_max=64,
