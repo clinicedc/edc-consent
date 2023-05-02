@@ -34,14 +34,13 @@ Register your consent model, its version and period of validity, with ``site_con
 
 add to settings:
 
-.. code-block:: python
+.. code-block:: bash
 
     INSTALLED_APPS = [
         ...
         'edc_consent.apps.AppConfig',
         ...
     ]
-
 
 
  Below needs to be updated
@@ -70,56 +69,56 @@ First, it's a good idea to limit the number of consents created to match your en
 
 .. code-block:: python
 
-	from edc_quota.client.models import QuotaMixin, QuotaManager
+    from edc_quota.client.models import QuotaMixin, QuotaManager
 
-	class ConsentQuotaMixin(QuotaMixin):
+    class ConsentQuotaMixin(QuotaMixin):
 
-	    QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
+        QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
 
-	    class Meta:
-	            abstract = True
+        class Meta:
+                abstract = True
 
 Then declare the consent model:
 
 .. code-block:: python
 
-	class MyConsent(ConsentQuotaMixin, BaseConsent):
+        class MyConsent(ConsentQuotaMixin, BaseConsent):
 
-    	quota = QuotaManager()
+            quota = QuotaManager()
 
-		class Meta:
-			app_label = 'my_app'
+        class Meta:
+            app_label = 'my_app'
 
 Declare the ModelForm:
 
 .. code-block:: python
 
-	class MyConsentForm(BaseConsentForm):
+    class MyConsentForm(BaseConsentForm):
 
-		class Meta:
-			model = MyConsent
+        class Meta:
+            model = MyConsent
 
 
 Now that you have a consent model class, identify and declare the models that will require this consent:
 
 .. code-block:: python
 
-	class Questionnaire(RequiresConsentMixin, models.Model):
+    class Questionnaire(RequiresConsentMixin, models.Model):
 
-    	consent_model = MyConsent  # or tuple (app_label, model_name)
+        consent_model = MyConsent  # or tuple (app_label, model_name)
 
-    	report_datetime = models.DateTimeField(default=timezone.now)
+        report_datetime = models.DateTimeField(default=timezone.now)
 
-    	question1 = models.CharField(max_length=10)
+        question1 = models.CharField(max_length=10)
 
-    	question2 = models.CharField(max_length=10)
+        question2 = models.CharField(max_length=10)
 
-    	question3 = models.CharField(max_length=10)
+        question3 = models.CharField(max_length=10)
 
-	@property
-	def subject_identifier(self):
-		"""Returns the subject identifier from ..."""
-		return subject_identifier
+    @property
+    def subject_identifier(self):
+        """Returns the subject identifier from ..."""
+        return subject_identifier
 
     class Meta:
         app_label = 'my_app'
@@ -159,16 +158,18 @@ A specimen consent is declared in your app like this:
 
 .. code-block:: python
 
-        class SpecimenConsent(BaseSpecimenConsent, SampleCollectionFieldsMixin, RequiresConsentMixin,
-                              VulnerabilityFieldsMixin, AppointmentMixin, BaseUuidModel):
+        class SpecimenConsent(
+            BaseSpecimenConsent, SampleCollectionFieldsMixin, RequiresConsentMixin,
+            VulnerabilityFieldsMixin, AppointmentMixin, BaseUuidModel
+        ):
 
-        consent_model = MyStudyConsent
+            consent_model = MyStudyConsent
 
-        registered_subject = models.OneToOneField(RegisteredSubject, null=True)
+            registered_subject = models.OneToOneField(RegisteredSubject, null=True)
 
-        objects = models.Manager()
+            objects = models.Manager()
 
-        history = AuditTrail()
+            history = AuditTrail()
 
         class Meta:
             app_label = 'my_app'
@@ -182,34 +183,34 @@ The ``ConsentAgeValidator`` validates the date of birth to within a given age ra
 
 .. code-block:: python
 
-	from edc_consent.validtors import ConsentAgeValidator
+    from edc_consent.validtors import ConsentAgeValidator
 
-	class MyConsent(ConsentQuotaMixin, BaseConsent):
+    class MyConsent(ConsentQuotaMixin, BaseConsent):
 
-		dob = models.DateField(
-	        validators=[ConsentAgeValidator(16, 64)])
+        dob = models.DateField(
+            validators=[ConsentAgeValidator(16, 64)])
 
-    	quota = QuotaManager()
+        quota = QuotaManager()
 
-		class Meta:
-			app_label = 'my_app'
+        class Meta:
+            app_label = 'my_app'
 
 The ``PersonalFieldsMixin`` includes a date of birth field and you can set the age bounds like this:
 
 .. code-block:: python
 
-	from edc_consent.validtors import ConsentAgeValidator
-	from edc_consent.models.fields import PersonalFieldsMixin
+    from edc_consent.validtors import ConsentAgeValidator
+    from edc_consent.models.fields import PersonalFieldsMixin
 
-	class MyConsent(ConsentQuotaMixin, PersonalFieldsMixin, BaseConsent):
+    class MyConsent(ConsentQuotaMixin, PersonalFieldsMixin, BaseConsent):
 
-    	quota = QuotaManager()
+        quota = QuotaManager()
 
         MIN_AGE_OF_CONSENT = 18
         MAX_AGE_OF_CONSENT = 64
 
-		class Meta:
-			app_label = 'my_app'
+        class Meta:
+            app_label = 'my_app'
 
 
 Common senarios
@@ -239,6 +240,36 @@ Infants use mother's consent
 TODO
 
 By adding the property ``consenting_subject_identifier`` to the consent
+
+
+Patient names
+=============
+If patient names need to be removed from the data collection, there are a few helper
+attributes and methods to consider.
+
+``settings.EDC_CONSENT_REMOVE_PATIENT_NAMES_FROM_COUNTRIES: list[str]``
+
+If given a list of country names, name fields will be removed from any admin.fieldset.
+
+See also edc_sites.all_sites
+
+``ConsentModelAdminMixin.get_fieldsets``
+
+.. code-block:: python
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        for country in get_remove_patient_names_from_countries():
+            site = getattr(request, "site", None)
+            if site and site.id in [s.site_id for s in self.all_sites.get(country)]:
+                return self.fieldsets_without_names(fieldsets)
+        return fieldsets
+
+This method could be added to any ModeLadmin with names.
+
+
+
+using
 
 
 Other TODO
