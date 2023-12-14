@@ -286,8 +286,8 @@ Other TODO
 .. |pypi| image:: https://img.shields.io/pypi/v/edc-consent.svg
     :target: https://pypi.python.org/pypi/edc-consent
 
-.. |actions| image:: https://github.com/clinicedc/edc-consent/workflows/build/badge.svg?branch=develop
-  :target: https://github.com/clinicedc/edc-consent/actions?query=workflow:build
+.. |actions| image:: https://github.com/clinicedc/edc-consent/actions/workflows/build.yml/badge.svg
+  :target: https://github.com/clinicedc/edc-consent/actions/workflows/build.yml
 
 .. |codecov| image:: https://codecov.io/gh/clinicedc/edc-consent/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/clinicedc/edc-consent
