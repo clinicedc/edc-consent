@@ -16,11 +16,11 @@ Register your consent model, its version and period of validity, with ``site_con
     from datetime import datetime
     from zoneifo import ZoneInfo
 
-    from edc_consent.consent import Consent
+    from edc_consent.consent_definition import ConsentDefinition
     from edc_consent.site_consents import site_consents
     from edc_constants.constants import MALE, FEMALE
 
-    subjectconsent_v1 = Consent(
+    subjectconsent_v1 = ConsentDefinition(
         'edc_example.subjectconsent',
         version='1',
         start=datetime(2013, 10, 15, tzinfo=ZoneInfo("UTC")),
