@@ -65,29 +65,37 @@ TODO
 Usage
 =====
 
-First, it's a good idea to limit the number of consents created to match your enrollment targets. Do this by creating a mixin for the consent model class:
-
-.. code-block:: python
-
-    from edc_quota.client.models import QuotaMixin, QuotaManager
-
-    class ConsentQuotaMixin(QuotaMixin):
-
-        QUOTA_REACHED_MESSAGE = 'Maximum number of subjects has been reached or exceeded for {}. Got {} >= {}.'
-
-        class Meta:
-                abstract = True
-
 Then declare the consent model:
 
 .. code-block:: python
 
-        class MyConsent(ConsentQuotaMixin, BaseConsent):
+    class SubjectConsent(
+        ConsentModelMixin,
+        SiteModelMixin,
+        UpdatesOrCreatesRegistrationModelMixin,
+        NonUniqueSubjectIdentifierModelMixin,
+        IdentityFieldsMixin,
+        PersonalFieldsMixin,
+        SampleCollectionFieldsMixin,
+        ReviewFieldsMixin,
+        VulnerabilityFieldsMixin,
+        SearchSlugModelMixin,
+        BaseUuidModel,
+    ):
 
-            quota = QuotaManager()
+        """A model completed by the user that captures the ICF."""
 
-        class Meta:
-            app_label = 'my_app'
+        subject_identifier_cls = SubjectIdentifier
+
+        subject_screening_model = "effect_screening.subjectscreening"
+
+        objects = SubjectConsentManager()
+        on_site = CurrentSiteManager()
+        consent = ConsentManager()
+        history = HistoricalRecords()
+
+        class Meta(ConsentModelMixin.Meta, BaseUuidModel.Meta):
+            pass
 
 Declare the ModelForm:
 
