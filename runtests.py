@@ -19,6 +19,7 @@ project_settings = DefaultTestSettings(
     EDC_NAVBAR_DEFAULT="edc_consent",
     EDC_PROTOCOL_STUDY_OPEN_DATETIME=get_utcnow() - relativedelta(years=1),
     EDC_PROTOCOL_STUDY_CLOSE_DATETIME=get_utcnow() + relativedelta(years=1),
+    EDC_SITES_REGISTER_DEFAULT=True,
     INSTALLED_APPS=[
         "django.contrib.admin",
         "django.contrib.auth",
