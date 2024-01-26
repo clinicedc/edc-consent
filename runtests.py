@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
+from edc_constants.constants import IGNORE
 from edc_test_utils import DefaultTestSettings, func_main
 from edc_utils import get_utcnow
 
@@ -15,7 +16,9 @@ project_settings = DefaultTestSettings(
     calling_file=__file__,
     BASE_DIR=base_dir,
     APP_NAME=app_name,
+    SILENCED_SYSTEM_CHECKS=["edc_consent.E001", "sites.E101"],
     ETC_DIR=str(base_dir / app_name / "tests" / "etc"),
+    EDC_NAVBAR_VERIFY_ON_LOAD=IGNORE,
     EDC_NAVBAR_DEFAULT="edc_consent",
     EDC_PROTOCOL_STUDY_OPEN_DATETIME=get_utcnow() - relativedelta(years=1),
     EDC_PROTOCOL_STUDY_CLOSE_DATETIME=get_utcnow() + relativedelta(years=1),
@@ -37,10 +40,13 @@ project_settings = DefaultTestSettings(
         "edc_export.apps.AppConfig",
         "edc_crf.apps.AppConfig",
         "edc_sites.apps.AppConfig",
+        "edc_form_runners.apps.AppConfig",
         "edc_timepoint.apps.AppConfig",
+        "edc_data_manager.apps.AppConfig",
         "edc_device.apps.AppConfig",
         "edc_identifier.apps.AppConfig",
         "edc_action_item.apps.AppConfig",
+        "edc_lab.apps.AppConfig",
         "edc_locator.apps.AppConfig",
         "edc_metadata.apps.AppConfig",
         "edc_notification.apps.AppConfig",
@@ -49,6 +55,7 @@ project_settings = DefaultTestSettings(
         "edc_visit_tracking.apps.AppConfig",
         "edc_consent.apps.AppConfig",
         "edc_auth.apps.AppConfig",
+        "edc_appconfig.apps.AppConfig",
     ],
     add_dashboard_middleware=True,
 ).settings
