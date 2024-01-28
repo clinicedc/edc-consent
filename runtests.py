@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
-from edc_constants.constants import IGNORE
 from edc_test_utils import DefaultTestSettings, func_main
 from edc_utils import get_utcnow
 
@@ -16,9 +15,13 @@ project_settings = DefaultTestSettings(
     calling_file=__file__,
     BASE_DIR=base_dir,
     APP_NAME=app_name,
-    SILENCED_SYSTEM_CHECKS=["edc_consent.E001", "sites.E101"],
+    SILENCED_SYSTEM_CHECKS=[
+        "edc_consent.E001",
+        "sites.E101",
+        "edc_navbar.E002",
+        "edc_navbar.E003",
+    ],
     ETC_DIR=str(base_dir / app_name / "tests" / "etc"),
-    EDC_NAVBAR_VERIFY_ON_LOAD=IGNORE,
     EDC_NAVBAR_DEFAULT="edc_consent",
     EDC_PROTOCOL_STUDY_OPEN_DATETIME=get_utcnow() - relativedelta(years=1),
     EDC_PROTOCOL_STUDY_CLOSE_DATETIME=get_utcnow() + relativedelta(years=1),
