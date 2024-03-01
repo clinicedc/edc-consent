@@ -17,15 +17,10 @@ from edc_consent.field_mixins import (
     ReviewFieldsMixin,
     VulnerabilityFieldsMixin,
 )
-from edc_consent.model_mixins import (
-    ConsentDefinitionModelMixin,
-    ConsentModelMixin,
-    RequiresConsentFieldsModelMixin,
-)
+from edc_consent.model_mixins import ConsentModelMixin, RequiresConsentFieldsModelMixin
 
 
-class SubjectScreening(SiteModelMixin, ConsentDefinitionModelMixin, BaseUuidModel):
-    consent_definition = None
+class SubjectScreening(SiteModelMixin, BaseUuidModel):
 
     screening_identifier = models.CharField(max_length=25, unique=True)
 
@@ -72,6 +67,26 @@ class SubjectConsent(
 
     class Meta(ConsentModelMixin.Meta):
         pass
+
+
+class SubjectConsentV1(SubjectConsent):
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentV2(SubjectConsent):
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentV3(SubjectConsent):
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentUpdateToV3(SubjectConsent):
+    class Meta:
+        proxy = True
 
 
 class SubjectReconsent(

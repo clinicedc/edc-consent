@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 def get_visit_schedule(
     consent_definition: ConsentDefinition | list[ConsentDefinition],
 ) -> VisitSchedule:
-    crfs = CrfCollection(Crf(show_order=1, model="edc_consent.crfone", required=True))
+    crfs = CrfCollection(Crf(show_order=1, model="consent_app.crfone", required=True))
 
     visit = Visit(
         code="1000",
