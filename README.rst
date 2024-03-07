@@ -30,17 +30,37 @@ Declare the consent model:
 
         subject_identifier_cls = SubjectIdentifier
 
-        subject_screening_model = "effect_screening.subjectscreening"
+        subject_screening_model = "edc_example.subjectscreening"
 
-        objects = SubjectConsentManager()
+        objects = ConsentObjectsManager()
         on_site = CurrentSiteManager()
-        consent = ConsentManager()
         history = HistoricalRecords()
 
         class Meta(ConsentModelMixin.Meta, BaseUuidModel.Meta):
             pass
 
-Declare at least one ``ConsentDefinition`` that references your consent model.
+
+    class SubjectConsentV1(SubjectConsent):
+        """A proxy model completed by the user that captures version 1
+         of the ICF.
+         """
+        objects = ConsentObjectsByCdefManager()
+        on_site = CurrentSiteByCdefManager()
+        history = HistoricalRecords()
+
+        class Meta:
+            proxy = True
+            verbose_name = "Consent V1"
+            verbose_name_plural = "Consent V1"
+
+The next step is to declare and register a ``ConsentDefinition``. A consent definition is a class that represents an
+approved Informed Consent. It is linked to a proxy of the consent model, for example ``SubjectConsent`` from above,
+using the class attribute
+``model``. We use a proxy model since over time each subject may need to submit more than one
+version of the consent. Each version of a subject's consent is represented by an instance of the Each version is paird with a proxy model. The approved Informed Consent
+also includes a validity period (start=datetime1 to end=datetime2) and a version number
+(version=1). There are other attributes of a ``ConsentDefinition`` to consider but lets focus
+on the ``start`` date, ``end`` date, ``version`` and ``model`` for now.
 
 ``ConsentDefinitions`` are declared in the root of your app in module ``consents.py``. A typical declaration looks something like this:
 
@@ -54,7 +74,7 @@ Declare at least one ``ConsentDefinition`` that references your consent model.
     from edc_constants.constants import MALE, FEMALE
 
     consent_v1 = ConsentDefinition(
-        'edc_example.subjectconsent',
+        'edc_example.subjectconsentv1',
         version='1',
         start=datetime(2013, 10, 15, tzinfo=ZoneInfo("UTC")),
         end=datetime(2016, 10, 15, 23, 59, 999999, tzinfo=ZoneInfo("UTC")),
@@ -78,19 +98,55 @@ add to settings:
 
 On bootup ``site_consents`` will ``autodiscover`` the ``consents.py`` and register the ``ConsentDefinition``.
 
-Now create an instance of the ``SubjectConsent`` model, ``subject_consent``. When the instance is saved, the model will find the ``ConsentDefinition`` with a validity period that includes ``subject_consent.consent_datetime`` and update ``subject_consent.version`` with the value of ``consent_definition.version``.
-In this case, for ``consent_datetime`` equal to ``datetime(2013, 10, 16, tzinfo=ZoneInfo("UTC"))``, the model will find ``consent_v1``.
-If the ``consent_datetime`` is outside of the date boundary, for example datetime(2017, 1, 1, tzinfo=ZoneInfo("UTC")), the model will not find a
-``ConsentDefinition`` and an exception will be raised (``ConsentDefinitionNotFound``).
+To create an instance of the consent for a subject, find the ``ConsentDefinitions`` and use
+``model_cls``.
+
+
+.. code-block:: python
+
+    cdef = site_consents.get_consent_definition(
+        report_datetime=datetime(2013, 10, 16, tzinfo=ZoneInfo("UTC"))
+    )
+
+    assert cdef.version == "1"
+    assert cdef.model == "edc_example.subjectconsentv1"
+
+    consent_obj = cdef.model_cls.objects.create(
+        subject_identifier="123456789",
+        consent_datetime=datetime(2013, 10, 16, tzinfo=ZoneInfo("UTC"),
+        ...)
+
+    assert consent_obj.consent_version == "1"
+    assert consent_obj.consent_model == "edc_example.subjectconsentv1"
+
+
 
 Add a second ``ConsentDefinition`` to ``your consents.py`` for version 2:
+
+.. code-block:: python
+
+    class SubjectConsentV2(SubjectConsent):
+        """A proxy model completed by the user that captures version 2
+         of the ICF.
+         """
+        objects = ConsentObjectsByCdefManager()
+        on_site = CurrentSiteByCdefManager()
+        history = HistoricalRecords()
+
+        class Meta:
+            proxy = True
+            verbose_name = "Consent V2"
+            verbose_name_plural = "Consent V2"
+
+
+
 
 .. code-block:: python
 
     consent_v1 = ConsentDefinition(...)
 
     consent_v2 = ConsentDefinition(
-        'edc_example.subjectconsent',
+        'edc_example.subjectconsentv2',
         version='2',
         start=datetime(2016, 10, 16, 0,0,0, tzinfo=ZoneInfo("UTC")),
         end=datetime(2020, 10, 15, 23, 59, 999999, tzinfo=ZoneInfo("UTC")),
@@ -103,8 +159,24 @@ Add a second ``ConsentDefinition`` to ``your consents.py`` for version 2:
     site_consents.register(consent_v2)
 
 
-Now resave the instance from above with ``consent_datetime = datetime(2017, 1, 1, tzinfo=ZoneInfo("UTC"))``. The model will find
-``consent_v2`` and update ``subject_consent.version = consent_v2.version`` which in this case is "2".
+
+.. code-block:: python
+
+    cdef = site_consents.get_consent_definition(
+        report_datetime=datetime(2016, 10, 17, tzinfo=ZoneInfo("UTC"))
+    )
+
+    assert cdef.version == "2"
+    assert cdef.model == "edc_example.subjectconsentv2"
+
+    consent_obj = cdef.model_cls.objects.create(
+        subject_identifier="123456789",
+        consent_datetime=datetime(2016, 10, 17, tzinfo=ZoneInfo("UTC"),
+        ...)
+
+    assert consent_obj.consent_version == "2"
+    assert consent_obj.consent_model == "edc_example.subjectconsentv2"
+
 
 ``edc_consent`` is coupled with ``edc_visit_schedule``. In fact, a data collection schedule is declared with one or more ``ConsentDefinitions``. CRFs and Requisitions listed in a schedule may only be submitted if the subject has consented.
 
@@ -119,42 +191,6 @@ Now resave the instance from above with ``consent_datetime = datetime(2017, 1, 1
     )
 
 When a CRF is saved, the CRF model will check the ``schedule`` to find the ``ConsentDefinition`` with a validity period that contains the ``crf.report_datetime``. Using the located ``ConsentDefinitions``, the CRF model will confirm the subject has a saved ``subject_consent`` with this ``consent_definition.version``.
-
-When there is more than one ``ConsentDefinition`` but still just one ``SubjectConsent`` model, declaring proxy models
-provides some clarity and allows the ``ModelForm`` and ``ModelAdmin`` classes to be customized.
-
-.. code-block:: python
-
-    class SubjectConsentV1(SubjectConsent):
-
-        class Meta:
-            proxy = True
-            verbose_name = "Consent V1"
-            verbose_name_plural = "Consent V1"
-
-
-    class SubjectConsentV2(SubjectConsent):
-
-        class Meta:
-            proxy = True
-            verbose_name = "Consent V2"
-            verbose_name_plural = "Consent V2"
-
-
-.. code-block:: python
-
-    consent_v1 = ConsentDefinition(
-        'edc_example.subjectconsentv1',
-        version='1', ...)
-
-    consent_v2 = ConsentDefinition(
-        'edc_example.subjectconsentv2',
-        version='2', ...)
-
-    site_consents.register(consent_v1)
-    site_consents.register(consent_v2)
-
-Now each model can use a custom ``ModelAdmin`` class.
 
 The ConsentDefinitions above assume that consent version 1 is completed for a subject
 consenting on or before 2016/10/15 and version 2 for those consenting after 2016/10/15.
