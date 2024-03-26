@@ -87,7 +87,6 @@ class SubjectConsentUgV1(SubjectConsent):
 
 
 class SubjectConsentV2(SubjectConsent):
-
     on_site = CurrentSiteByCdefManager()
     objects = ConsentObjectsByCdefManager()
 
@@ -96,6 +95,14 @@ class SubjectConsentV2(SubjectConsent):
 
 
 class SubjectConsentV3(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentV4(SubjectConsent):
     on_site = CurrentSiteByCdefManager()
     objects = ConsentObjectsByCdefManager()
 
