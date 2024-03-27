@@ -17,6 +17,7 @@ from edc_consent.field_mixins import (
     ReviewFieldsMixin,
     VulnerabilityFieldsMixin,
 )
+from edc_consent.managers import ConsentObjectsByCdefManager, CurrentSiteByCdefManager
 from edc_consent.model_mixins import ConsentModelMixin, RequiresConsentFieldsModelMixin
 
 
@@ -70,16 +71,41 @@ class SubjectConsent(
 
 
 class SubjectConsentV1(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentUgV1(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
     class Meta:
         proxy = True
 
 
 class SubjectConsentV2(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
     class Meta:
         proxy = True
 
 
 class SubjectConsentV3(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
+    class Meta:
+        proxy = True
+
+
+class SubjectConsentV4(SubjectConsent):
+    on_site = CurrentSiteByCdefManager()
+    objects = ConsentObjectsByCdefManager()
+
     class Meta:
         proxy = True
 
