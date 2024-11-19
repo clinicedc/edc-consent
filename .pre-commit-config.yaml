@@ -43,6 +43,8 @@ repos:
                 edc_consent/tests/crypto_keys/user-rsa-local-private.pem|
                 edc_consent/tests/crypto_keys/user-rsa-restricted-private.pem
               )$
+      - id: end-of-file-fixer
+        exclude: ^edc_consent/tests/crypto_keys/
       - id: fix-byte-order-marker
       - id: requirements-txt-fixer
         files: requirements/.*\.txt$
