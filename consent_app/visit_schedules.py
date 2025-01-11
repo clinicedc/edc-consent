@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def get_visit_schedule(
-    consent_definition: ConsentDefinition | list[ConsentDefinition],
+    consent_definition: ConsentDefinition | list[ConsentDefinition], extend: bool | None = None
 ) -> VisitSchedule:
     crfs = CrfCollection(Crf(show_order=1, model="consent_app.crfone", required=True))
 
@@ -20,6 +20,34 @@ def get_visit_schedule(
         code="1000",
         timepoint=0,
         rbase=relativedelta(days=0),
+        rlower=relativedelta(days=0),
+        rupper=relativedelta(days=6),
+        requisitions=None,
+        crfs=crfs,
+        requisitions_unscheduled=None,
+        crfs_unscheduled=None,
+        allow_unscheduled=False,
+        facility_name="5-day-clinic",
+    )
+
+    visit1010 = Visit(
+        code="1010",
+        timepoint=1,
+        rbase=relativedelta(months=1),
+        rlower=relativedelta(days=0),
+        rupper=relativedelta(days=6),
+        requisitions=None,
+        crfs=crfs,
+        requisitions_unscheduled=None,
+        crfs_unscheduled=None,
+        allow_unscheduled=False,
+        facility_name="5-day-clinic",
+    )
+
+    visit1020 = Visit(
+        code="1020",
+        timepoint=2,
+        rbase=relativedelta(months=2),
         rlower=relativedelta(days=0),
         rupper=relativedelta(days=6),
         requisitions=None,
@@ -46,6 +74,9 @@ def get_visit_schedule(
     )
 
     schedule.add_visit(visit)
+    if extend:
+        schedule.add_visit(visit1010)
+        schedule.add_visit(visit1020)
 
     visit_schedule.add_schedule(schedule)
     return visit_schedule

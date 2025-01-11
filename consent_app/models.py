@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import PROTECT
+from django.db.models import PROTECT, Manager
 from edc_constants.choices import GENDER_UNDETERMINED
 from edc_constants.constants import FEMALE
 from edc_identifier.model_mixins import NonUniqueSubjectIdentifierModelMixin
@@ -18,7 +18,11 @@ from edc_consent.field_mixins import (
     VulnerabilityFieldsMixin,
 )
 from edc_consent.managers import ConsentObjectsByCdefManager, CurrentSiteByCdefManager
-from edc_consent.model_mixins import ConsentModelMixin, RequiresConsentFieldsModelMixin
+from edc_consent.model_mixins import (
+    ConsentExtensionModelMixin,
+    ConsentModelMixin,
+    RequiresConsentFieldsModelMixin,
+)
 
 
 class SubjectScreening(SiteModelMixin, BaseUuidModel):
@@ -76,6 +80,19 @@ class SubjectConsentV1(SubjectConsent):
 
     class Meta:
         proxy = True
+
+
+class SubjectConsentV1Ext(ConsentExtensionModelMixin, SiteModelMixin, BaseUuidModel):
+
+    subject_consent = models.ForeignKey(SubjectConsentV1, on_delete=models.PROTECT)
+
+    on_site = CurrentSiteManager()
+    history = HistoricalRecords()
+    objects = Manager()
+
+    class Meta(ConsentExtensionModelMixin.Meta, BaseUuidModel.Meta):
+        verbose_name = "Subject Consent Extension V1.1"
+        verbose_name_plural = "Subject Consent Extension V1.1"
 
 
 class SubjectConsentUgV1(SubjectConsent):
