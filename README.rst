@@ -5,8 +5,33 @@ edc-consent
 
 Add classes for the Informed Consent form and process.
 
-Installation
-============
+
+Concepts
+========
+
+In the EDC, the ICF is a model to be completed by each participant that is to follow the data collection schedule linked to the consent.
+
+* Version:
+    consents have a version number. A version has a start and end date and link to a data collection schedule (visit schedule.schedule)
+* Extend existing version:
+    an existing consent version's data collection schedule may be extended, e.g. from 12 to 24 months for participants that have completed the model defined for the extension (cdef.extended_by).
+* Version updates previous version:
+    For changes to the protocol that affect the data collection schedule, the consent version can be bumped up. For example, bump v1 to v2. Once participants reach a report data after the v1 end data, data collection will be blocked unless v2 is completed.
+
+
+Features
+========
+
+* base class for an informed consent document
+* data for models that require consent cannot be add until the consent is added
+* consents have a version number and validity period
+* maximum number of consented subjects can be controlled.
+* data collection is only allowed within the validity period of the consent per consented participant
+* data for models that require consent are tagged with the consent version
+
+
+Usage
+=====
 
 Declare the consent model:
 
@@ -81,7 +106,8 @@ on the ``start`` date, ``end`` date, ``version`` and ``model`` for now.
         age_min=16,
         age_is_adult=18,
         age_max=64,
-        gender=[MALE, FEMALE])
+        gender=[MALE, FEMALE],
+        extended_by=None)
 
     site_consents.register(consent_v1)
 
@@ -153,7 +179,8 @@ Add a second ``ConsentDefinition`` to ``your consents.py`` for version 2:
         age_min=16,
         age_is_adult=18,
         age_max=64,
-        gender=[MALE, FEMALE])
+        gender=[MALE, FEMALE],
+        extended_by=None)
 
     site_consents.register(consent_v1)
     site_consents.register(consent_v2)
@@ -227,31 +254,49 @@ As the trial continues past 2016/10/15, there will three categories of subjects:
 If the report date is after 2016/10/15, data entry for "Subjects who completed version 1 only"
 will be blocked until the version 2 consent is submitted.
 
+Extending followup for an existing version
+==========================================
+
+After a protocol amendment, you may need to extend the number of timepoints for participants who agree to the extension.
+This is usually done by setting a new consent version with a start date that corresponds with the implementation date of
+the protocol amendment. However, if the amendment is implemented where some agree and others do not, a new version may
+not suffice.
+
+For example, suppose at 30 months into a 36 month study, the study receives approval to extend the study
+to 48 months. All participants will be given a choice to complete at 36 months post-enrollment, as originally agreed,
+or extend to 48 months post-enrollment. The consent extension model captures their intention and the EDC will either
+allow or disallow timepoints after 36 months accordingly.
+
+This is managed by the ``ConsentExtensionDefinition`` class where the additional timepoints are
+listed.
+
+.. code-block:: python
+
+    """timpoints 15-18 represent 39m, 42m, 45m, 48m"""
+    consent_v1_ext = ConsentDefinitionExtension(
+        "meta_consent.subjectconsentv1ext",
+        version="1.1",
+        start=datetime(2024, 12, 16, tzinfo=ZoneInfo("UTC")),
+        extends=consent_v1,
+        timepoints=[15, 16, 17, 18],
+    )
+
+Important:
+    The schedule definition must be changed in code in the ``visit_schedule`` module to include all 18 timepoints (0m-48m).
+    The ``ConsentExtensionDefinition`` will remove ``Visit`` instances from the ``VisitCollection`` for the given subject
+    if necessary.
+
+
+The ``ConsentExtensionDefinition`` links to a model to be completed by the participant.
+
+* If the model instance does not exist, the additional timepoints are truncated from the participant's schedule.
+* If the model instance exists but field ``agrees_to_extension`` != ``YES``, the additional timepoints are truncated from the participant's schedule.
+* If the model instance exists and field ``agrees_to_extension`` == ``YES``, the additional timepoints are NOT truncated from the participant's schedule.
 
 
 
-
-Features
-========
-
-* base class for an informed consent document
-* data for models that require consent cannot be add until the consent is added
-* consents have a version number and validity period
-* maximum number of consented subjects can be controlled.
-* data collection is only allowed within the validity period of the consent per consented participant
-* data for models that require consent are tagged with the consent version
-
-TODO
-====
-
-- link subject type to the consent model. e.g. maternal, infant, adult, etc.
-- version at model field level (e.g. a new consent period adds additional questions to a form)
-- allow a different subject's consent to cover for another, for example mother and infant.
-
-Usage
-=====
-
-
+ModelForm
+=========
 
 Declare the ModelForm:
 
